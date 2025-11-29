@@ -1,0 +1,271 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 1s ease-in;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+* {
+  scroll-behavior: smooth;
+}
+
+/* Fuente TAN Headline para el logo */
+@font-face {
+  font-family: 'TAN Headline';
+  src: url('/fonts/TAN-Headline.woff2') format('woff2'),
+       url('/fonts/TAN-Headline.woff') format('woff'),
+       url('/fonts/TAN-Headline.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Clase para el texto del logo con fuente TAN Headline */
+.montenegros-logo-text {
+  font-family: 'TAN Headline', 'Playfair Display', 'Times New Roman', serif;
+  font-weight: normal;
+  font-style: normal;
+  letter-spacing: 0.02em;
+  color: white;
+  text-transform: uppercase;
+}
+
+/* ===================================
+   VARIABLES CSS PARA MODO OSCURO
+   =================================== */
+
+:root {
+  /* Colores principales - Modo Claro */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  
+  --text-primary: #212529;
+  --text-secondary: #6c757d;
+  --text-muted: #adb5bd;
+  
+  --border-color: #dee2e6;
+  --shadow: rgba(0, 0, 0, 0.1);
+  
+  --card-bg: #ffffff;
+  --card-border: #dee2e6;
+  
+  --input-bg: #ffffff;
+  --input-border: #ced4da;
+  --input-focus: #0d6efd;
+  
+  --navbar-bg: #dc3545;
+  --navbar-text: #ffffff;
+  
+  --success: #28a745;
+  --danger: #dc3545;
+  --warning: #ffc107;
+  --info: #17a2b8;
+}
+
+/* Aplicar variables CSS */
+body {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+  color: var(--text-primary);
+}
+
+.form-control,
+.form-select {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--text-primary);
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--input-bg);
+  border-color: var(--input-focus);
+  color: var(--text-primary);
+}
+
+.table {
+  color: var(--text-primary);
+}
+
+.table-dark {
+  background-color: var(--bg-tertiary);
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+.border {
+  border-color: var(--border-color) !important;
+}
+
+:root {
+  --montenegro-green: #0B6E4F;
+  --montenegro-red: #FF0000;
+  --montenegro-yellow: #FFD54F;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  overflow-x: hidden;
+}
+
+/* Header styles */
+.header-logo {
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 576px) {
+  .header-logo {
+    max-height: 40px !important;
+  }
+}
+
+/* Banner styles */
+.banner-container {
+  width: 100%;
+  overflow: hidden;
+}
+
+.banner-image-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.custom-banner-image {
+  transition: transform 0.3s ease;
+}
+
+@media (max-width: 576px) {
+  .banner-image-container {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .banner-text h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .banner-text h3 {
+    font-size: 1rem !important;
+  }
+}
+
+/* Navigation buttons */
+.nav-button {
+  transition: background-color 0.2s ease;
+  touch-action: manipulation;
+}
+
+.nav-button:active {
+  background-color: #095a41 !important;
+}
+
+@media (max-width: 360px) {
+  .nav-button {
+    font-size: 0.75rem !important;
+    padding: 0.35rem 0.5rem !important;
+  }
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 576px) {
+  .container-fluid {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    word-break: break-word;
+  }
+}
+
+/* Mejoras en el scroll horizontal */
+.overflow-auto {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.overflow-auto::-webkit-scrollbar {
+  display: none;
+}
+
+/* Utilidades adicionales ya incluidas en @layer utilities arriba */
+
+/* Animaciones suaves */
+.btn, .card {
+  transition: all 0.2s ease-in-out;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* Mejoras en las imágenes */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Product Grid Responsive */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}

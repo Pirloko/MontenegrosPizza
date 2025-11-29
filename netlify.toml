@@ -1,0 +1,47 @@
+# Netlify Configuration for Montenegro Pizza
+[build]
+  # Build command
+  command = "npm run build"
+  
+  # Publish directory (dist for Vite)
+  publish = "dist"
+  
+  # Base directory
+  base = "/"
+
+# Redirect all routes to index.html for React Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Environment variables (estas se configuran en Netlify UI)
+# VITE_SUPABASE_URL
+# VITE_SUPABASE_ANON_KEY
+
+# Build optimization
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
+
+# Headers for security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache images
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
