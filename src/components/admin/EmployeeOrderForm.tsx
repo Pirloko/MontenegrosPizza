@@ -721,7 +721,7 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
               </p>
             </div>
 
-            <Modal.Body style={{ padding: '24px' }}>
+            <Modal.Body style={{ padding: '24px', maxHeight: '80vh', overflowY: 'auto' }}>
               {/* Precio base */}
               <div className="mb-4" style={{ paddingBottom: '16px', borderBottom: '1px solid #e9ecef' }}>
                 <div className="d-flex justify-content-between align-items-center">
