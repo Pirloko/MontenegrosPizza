@@ -80,11 +80,17 @@ export default function ProductList({ products, categories, categoryName, onAddT
                   <img
                     src={product.image_url || '/images/logo.jpeg'}
                     alt={product.name}
+                    loading="lazy"
+                    decoding="async"
                     style={{
                       width: '100%',
                       height: '100%',
                       objectFit: 'cover',
                       objectPosition: 'center'
+                    }}
+                    onError={(e) => {
+                      // Fallback si la imagen falla
+                      (e.target as HTMLImageElement).src = '/images/logo.jpeg';
                     }}
                   />
                   {/* Tag Vegetariano */}

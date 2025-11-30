@@ -6,6 +6,7 @@ import { productService } from '../services/productService';
 import { categoryService } from '../services/categoryService';
 import { Database } from '../types/database';
 import { products as backupProducts } from '../data/products';
+import { cache } from '../hooks/useProductCache';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type Category = Database['public']['Tables']['categories']['Row'];
@@ -14,6 +15,9 @@ interface HomeProps {
   category: string;
   onAddToCart: (product: Product, customizations: any) => void;
 }
+
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutos para productos
+const CATEGORIES_CACHE_TTL = 30 * 60 * 1000; // 30 minutos para categorías (cambian menos)
 
 export default function Home({ category, onAddToCart }: HomeProps) {
   const [products, setProducts] = useState<Product[]>([]);
@@ -31,21 +35,58 @@ export default function Home({ category, onAddToCart }: HomeProps) {
       setLoading(true);
       setError('');
       
-      const [productsData, categoriesData] = await Promise.all([
-        productService.getActive(),
-        categoryService.getActive()
-      ]);
+      // Intentar cargar desde caché primero
+      const cachedProducts = cache.get<Product[]>('products');
+      const cachedCategories = cache.get<Category[]>('categories');
       
-      setProducts(productsData);
-      setCategories(categoriesData);
-      setUseBackup(false);
+      if (cachedProducts && cachedCategories) {
+        console.log('✅ Cargando desde caché');
+        setProducts(cachedProducts);
+        setCategories(cachedCategories);
+        setUseBackup(false);
+        setLoading(false);
+        
+        // Cargar en background para actualizar caché
+        loadDataFromServer();
+        return;
+      }
+      
+      // Si no hay caché, cargar desde servidor
+      await loadDataFromServer();
     } catch (err: any) {
-      console.error('Error loading data from Supabase:', err);
+      console.error('Error loading data:', err);
       setError('Error al cargar productos desde la base de datos');
-      setUseBackup(true); // Fallback a datos locales si hay error
+      
+      // Intentar usar caché expirado como fallback
+      const cachedProducts = cache.get<Product[]>('products');
+      const cachedCategories = cache.get<Category[]>('categories');
+      
+      if (cachedProducts && cachedCategories) {
+        console.log('⚠️ Usando caché expirado como fallback');
+        setProducts(cachedProducts);
+        setCategories(cachedCategories);
+        setUseBackup(false);
+      } else {
+        setUseBackup(true); // Fallback a datos locales si hay error
+      }
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadDataFromServer = async () => {
+    const [productsData, categoriesData] = await Promise.all([
+      productService.getActive(),
+      categoryService.getActive()
+    ]);
+    
+    // Guardar en caché
+    cache.set('products', productsData, CACHE_TTL);
+    cache.set('categories', categoriesData, CATEGORIES_CACHE_TTL);
+    
+    setProducts(productsData);
+    setCategories(categoriesData);
+    setUseBackup(false);
   };
 
   // Si está cargando, mostrar spinner
