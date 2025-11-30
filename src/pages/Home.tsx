@@ -75,18 +75,23 @@ export default function Home({ category, onAddToCart }: HomeProps) {
   };
 
   const loadDataFromServer = async () => {
-    const [productsData, categoriesData] = await Promise.all([
-      productService.getActive(),
-      categoryService.getActive()
-    ]);
-    
-    // Guardar en caché
-    cache.set('products', productsData, CACHE_TTL);
-    cache.set('categories', categoriesData, CATEGORIES_CACHE_TTL);
-    
-    setProducts(productsData);
-    setCategories(categoriesData);
-    setUseBackup(false);
+    try {
+      const [productsData, categoriesData] = await Promise.all([
+        productService.getActive(),
+        categoryService.getActive()
+      ]);
+      
+      // Guardar en caché
+      cache.set('products', productsData, CACHE_TTL);
+      cache.set('categories', categoriesData, CATEGORIES_CACHE_TTL);
+      
+      setProducts(productsData);
+      setCategories(categoriesData);
+      setUseBackup(false);
+    } catch (err: any) {
+      console.error('Error cargando desde servidor:', err);
+      throw err; // Re-lanzar para que loadData lo maneje
+    }
   };
 
   // Si está cargando, mostrar spinner

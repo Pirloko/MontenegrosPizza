@@ -16,71 +16,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         console.log('🔄 Inicializando Auth...');
         
-        // Limpiar tokens corruptos primero
-        if (typeof window !== 'undefined') {
-          try {
-            // Verificar si hay tokens corruptos (keys que empiezan con supabase pero no tienen formato válido)
-            const supabaseKeys = Object.keys(localStorage).filter(key => 
-              key.startsWith('supabase.auth.') || key.startsWith('sb-')
-            );
-            
-            // Intentar validar si hay una sesión válida
-            let hasValidSession = false;
-            for (const key of supabaseKeys) {
-              try {
-                const value = localStorage.getItem(key);
-                if (value && value.length > 10) {
-                  // Token parece válido, intentar usarlo
-                  hasValidSession = true;
-                  break;
-                }
-              } catch (e) {
-                // Token corrupto, eliminar
-                localStorage.removeItem(key);
-              }
-            }
-            
-            // Si no hay tokens válidos, limpiar todo
-            if (!hasValidSession && supabaseKeys.length > 0) {
-              console.log('🧹 Limpiando tokens corruptos...');
-              supabaseKeys.forEach(key => {
-                try {
-                  localStorage.removeItem(key);
-                } catch (e) {
-                  // Ignorar errores
-                }
-              });
-            }
-          } catch (e) {
-            console.warn('⚠️ Error limpiando tokens:', e);
-          }
-        }
-        
-        // Verificar sesión con timeout más largo para dar tiempo a Supabase
-        const getSessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout')), 5000) // Aumentado a 5 segundos
-        );
-        
+        // Verificar sesión directamente - sin limpieza que pueda bloquear
         let session = null;
         try {
-          const result = await Promise.race([getSessionPromise, timeoutPromise]);
-          session = result?.data?.session;
-        } catch (timeoutError: any) {
-          console.warn('⚠️ Timeout al obtener sesión, intentando recuperar...');
-          
-          // Intentar una vez más con un timeout más corto
-          try {
-            const retryPromise = supabase.auth.getSession();
-            const retryTimeout = new Promise<never>((_, reject) => 
-              setTimeout(() => reject(new Error('Retry timeout')), 2000)
-            );
-            const retryResult = await Promise.race([retryPromise, retryTimeout]);
-            session = retryResult?.data?.session;
-          } catch (retryError) {
-            console.warn('⚠️ Segundo intento falló, continuando sin sesión');
-            session = null;
+          const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+          if (sessionError) {
+            console.warn('⚠️ Error al obtener sesión:', sessionError);
+          } else {
+            session = sessionData?.session;
           }
+        } catch (error: any) {
+          console.warn('⚠️ Error al obtener sesión:', error);
+          // Continuar sin sesión en lugar de bloquear
         }
         
         if (session?.user && mounted) {
@@ -99,13 +46,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
     
-    // Timeout de seguridad: si no carga en 3 segundos, forzar fin de loading
+    // Timeout de seguridad: si no carga en 2 segundos, forzar fin de loading
     const safetyTimeout = setTimeout(() => {
       if (mounted && loading) {
         console.warn('⚠️ Timeout en carga inicial');
         setLoading(false);
       }
-    }, 3000);
+    }, 2000);
     
     initialize().finally(() => clearTimeout(safetyTimeout));
     
@@ -185,48 +132,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Limpiar estado local primero
       setUser(null);
       
-      // Limpieza mínima y no bloqueante - solo si hay tokens obviamente corruptos
-      if (typeof window !== 'undefined') {
-        try {
-          const mainToken = localStorage.getItem('supabase.auth.token');
-          // Solo limpiar si el token existe pero parece corrupto (muy corto)
-          if (mainToken && mainToken.length < 20) {
-            console.log('🧹 Eliminando token corrupto');
-            localStorage.removeItem('supabase.auth.token');
-          }
-        } catch (e) {
-          // Ignorar errores
-        }
-      }
-      
-      // Intentar signOut de forma no bloqueante (no esperar)
-      supabase.auth.signOut().catch(() => {
-        // Ignorar errores de signOut
-      });
-
-      // Login directo sin esperar limpieza
+      // NO hacer limpieza antes del login - dejar que Supabase maneje su propia sesión
+      // Login directo sin ninguna limpieza que pueda bloquear
       console.log('🔑 Autenticando...');
       
-      let loginResult;
-      try {
-        const loginPromise = supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        
-        const loginTimeout = new Promise<never>((_, reject) => 
-          setTimeout(() => reject(new Error('Timeout en login')), 20000) // 20 segundos
-        );
-        
-        loginResult = await Promise.race([loginPromise, loginTimeout]);
-      } catch (timeoutError: any) {
-        if (timeoutError?.message === 'Timeout en login') {
-          throw new Error('El login está tardando demasiado. Por favor, verifica tu conexión a internet e intenta nuevamente.');
-        }
-        throw timeoutError;
-      }
-      
-      const { data, error } = loginResult;
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
       
       console.log('✅ Respuesta recibida');
 
