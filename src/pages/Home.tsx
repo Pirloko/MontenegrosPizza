@@ -31,46 +31,34 @@ export default function Home({ category, onAddToCart }: HomeProps) {
   }, []);
 
   const loadData = async () => {
+    // CARGAR CACHÉ INMEDIATAMENTE - no esperar
+    const cachedProducts = cache.get<Product[]>('products');
+    const cachedCategories = cache.get<Category[]>('categories');
+    
+    if (cachedProducts && cachedCategories) {
+      console.log('✅ Cargando desde caché');
+      setProducts(cachedProducts);
+      setCategories(cachedCategories);
+      setUseBackup(false);
+      setLoading(false);
+      
+      // Cargar en background para actualizar caché
+      loadDataFromServer().catch(() => {
+        // Ignorar errores, ya tenemos caché
+      });
+      return;
+    }
+    
+    // Si no hay caché, mostrar backup inmediatamente y cargar en background
+    setUseBackup(true);
+    setLoading(false);
+    
+    // Cargar desde servidor en background
     try {
-      setLoading(true);
-      setError('');
-      
-      // Intentar cargar desde caché primero
-      const cachedProducts = cache.get<Product[]>('products');
-      const cachedCategories = cache.get<Category[]>('categories');
-      
-      if (cachedProducts && cachedCategories) {
-        console.log('✅ Cargando desde caché');
-        setProducts(cachedProducts);
-        setCategories(cachedCategories);
-        setUseBackup(false);
-        setLoading(false);
-        
-        // Cargar en background para actualizar caché
-        loadDataFromServer();
-        return;
-      }
-      
-      // Si no hay caché, cargar desde servidor
       await loadDataFromServer();
     } catch (err: any) {
       console.error('Error loading data:', err);
-      setError('Error al cargar productos desde la base de datos');
-      
-      // Intentar usar caché expirado como fallback
-      const cachedProducts = cache.get<Product[]>('products');
-      const cachedCategories = cache.get<Category[]>('categories');
-      
-      if (cachedProducts && cachedCategories) {
-        console.log('⚠️ Usando caché expirado como fallback');
-        setProducts(cachedProducts);
-        setCategories(cachedCategories);
-        setUseBackup(false);
-      } else {
-        setUseBackup(true); // Fallback a datos locales si hay error
-      }
-    } finally {
-      setLoading(false);
+      // Ya tenemos backup mostrándose, no hacer nada más
     }
   };
 

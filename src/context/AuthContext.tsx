@@ -12,49 +12,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
     
+    // TERMINAR LOADING INMEDIATAMENTE - no bloquear la app
+    setLoading(false);
+    
+    // Inicializar Auth en background sin bloquear
     async function initialize() {
       try {
-        console.log('🔄 Inicializando Auth...');
-        
-        // Verificar sesión directamente - sin limpieza que pueda bloquear
-        let session = null;
-        try {
-          const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-          if (sessionError) {
-            console.warn('⚠️ Error al obtener sesión:', sessionError);
-          } else {
-            session = sessionData?.session;
-          }
-        } catch (error: any) {
-          console.warn('⚠️ Error al obtener sesión:', error);
-          // Continuar sin sesión en lugar de bloquear
-        }
-        
-        if (session?.user && mounted) {
-          console.log('✅ Sesión encontrada para:', session.user.email);
-          await fetchUserProfile(session.user.id);
-        } else {
-          console.log('ℹ️ No hay sesión activa');
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData?.session?.user && mounted) {
+          fetchUserProfile(sessionData.session.user.id).catch(() => {
+            // Ignorar errores, no bloquear
+          });
         }
       } catch (error) {
-        console.error('❌ Error en inicialización:', error);
-        // No fallar, simplemente continuar sin sesión
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        // Ignorar errores, no bloquear
       }
     }
     
-    // Timeout de seguridad: si no carga en 2 segundos, forzar fin de loading
-    const safetyTimeout = setTimeout(() => {
-      if (mounted && loading) {
-        console.warn('⚠️ Timeout en carga inicial');
-        setLoading(false);
-      }
-    }, 2000);
-    
-    initialize().finally(() => clearTimeout(safetyTimeout));
+    // Ejecutar en background sin esperar
+    initialize();
     
     // Escuchar cambios de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -62,17 +38,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!mounted) return;
         
         if (session?.user) {
-          await fetchUserProfile(session.user.id);
+          fetchUserProfile(session.user.id).catch(() => {
+            // Ignorar errores
+          });
         } else {
           setUser(null);
         }
-        setLoading(false);
       }
     );
 
     return () => {
       mounted = false;
-      clearTimeout(safetyTimeout);
       subscription.unsubscribe();
     };
   }, []);
@@ -164,11 +140,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       console.log('✅ Login exitoso, obteniendo perfil...');
       
-      // Fetch user profile - con timeout y mejor manejo de errores
-      try {
-        await fetchUserProfile(data.user.id);
-        console.log('✅ Perfil obtenido');
-      } catch (profileError: any) {
+      // Fetch user profile - no bloquear si tarda, intentar en background
+      fetchUserProfile(data.user.id).catch((profileError: any) => {
         console.error('⚠️ Error obteniendo perfil, pero el login fue exitoso:', profileError);
         // No fallar el login si el perfil falla, crear perfil básico
         const basicProfile: User = {
@@ -183,7 +156,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           updated_at: new Date().toISOString()
         };
         setUser(basicProfile);
-      }
+      });
+      
+      // No esperar a que termine fetchUserProfile - el login ya fue exitoso
+      console.log('✅ Login completado');
     } catch (error: any) {
       console.error('❌ Error en signIn:', error);
       const errorMessage = error.message || 'Error al iniciar sesión';

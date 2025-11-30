@@ -96,10 +96,9 @@ function AppContent() {
     return total + itemTotal + extraCost;
   }, 0);
 
-  // Redirect based on user role
+  // Redirect based on user role - NO ESPERAR A LOADING
   function HomeRedirect() {
-    if (loading) return <div>Cargando...</div>;
-    
+    // Mostrar productos inmediatamente, no esperar Auth
     if (!user) {
       return <Home category={currentCategory} onAddToCart={handleAddToCart} />;
     }
