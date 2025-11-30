@@ -182,74 +182,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('La URL de Supabase no parece válida. Debe contener "supabase.co"');
       }
 
-      // Limpiar cualquier sesión corrupta PRIMERO (más agresivo)
-      console.log('🧹 Limpiando sesiones anteriores...');
-      try {
-        // Limpiar estado local primero
-        setUser(null);
-        
-        // Limpiar TODOS los tokens de Supabase de localStorage y sessionStorage
-        if (typeof window !== 'undefined') {
-          try {
-            // Limpiar localStorage
-            const localStorageKeys = Object.keys(localStorage).filter(key => 
-              key.startsWith('supabase.auth.') || 
-              key.startsWith('sb-') ||
-              key.includes('supabase')
-            );
-            localStorageKeys.forEach(key => {
-              try {
-                localStorage.removeItem(key);
-                console.log('🧹 Limpiado localStorage:', key);
-              } catch (e) {
-                // Ignorar errores
-              }
-            });
-            
-            // Limpiar sessionStorage
-            const sessionStorageKeys = Object.keys(sessionStorage).filter(key => 
-              key.startsWith('supabase.auth.') || 
-              key.startsWith('sb-') ||
-              key.includes('supabase')
-            );
-            sessionStorageKeys.forEach(key => {
-              try {
-                sessionStorage.removeItem(key);
-                console.log('🧹 Limpiado sessionStorage:', key);
-              } catch (e) {
-                // Ignorar errores
-              }
-            });
-            
-            console.log('✅ Almacenamiento limpiado completamente');
-          } catch (e) {
-            console.warn('⚠️ Error limpiando almacenamiento:', e);
-          }
-        }
-        
-        // Intentar signOut con timeout corto (pero no bloquear si falla)
+      // Limpiar estado local primero
+      setUser(null);
+      
+      // Limpieza mínima y no bloqueante - solo si hay tokens obviamente corruptos
+      if (typeof window !== 'undefined') {
         try {
-          const signOutPromise = supabase.auth.signOut();
-          const timeoutPromise = new Promise<never>((_, reject) => 
-            setTimeout(() => reject(new Error('Timeout')), 1000) // Reducido a 1 segundo
-          );
-          
-          await Promise.race([signOutPromise, timeoutPromise]);
-        } catch (timeoutError: any) {
-          // No importa si falla, ya limpiamos manualmente
-          console.log('⚠️ signOut con timeout, pero ya limpiamos manualmente');
+          const mainToken = localStorage.getItem('supabase.auth.token');
+          // Solo limpiar si el token existe pero parece corrupto (muy corto)
+          if (mainToken && mainToken.length < 20) {
+            console.log('🧹 Eliminando token corrupto');
+            localStorage.removeItem('supabase.auth.token');
+          }
+        } catch (e) {
+          // Ignorar errores
         }
-      } catch (e) {
-        console.log('⚠️ Error en limpieza, continuando de todas formas:', e);
       }
+      
+      // Intentar signOut de forma no bloqueante (no esperar)
+      supabase.auth.signOut().catch(() => {
+        // Ignorar errores de signOut
+      });
 
-      // Login directo sin timeout - confiar en Supabase
+      // Login directo sin esperar limpieza
       console.log('🔑 Autenticando...');
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      let loginResult;
+      try {
+        const loginPromise = supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        const loginTimeout = new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('Timeout en login')), 20000) // 20 segundos
+        );
+        
+        loginResult = await Promise.race([loginPromise, loginTimeout]);
+      } catch (timeoutError: any) {
+        if (timeoutError?.message === 'Timeout en login') {
+          throw new Error('El login está tardando demasiado. Por favor, verifica tu conexión a internet e intenta nuevamente.');
+        }
+        throw timeoutError;
+      }
+      
+      const { data, error } = loginResult;
       
       console.log('✅ Respuesta recibida');
 
@@ -268,7 +245,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error(error.message || 'Error al iniciar sesión');
       }
 
-      if (!data.user) {
+      if (!data?.user) {
         throw new Error('No se pudo autenticar el usuario');
       }
 

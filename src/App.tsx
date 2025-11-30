@@ -18,6 +18,7 @@ import DeliveryDashboard from './components/dashboards/DeliveryDashboard';
 // Customer Components
 import Home from './pages/Home';
 import CartDrawer from './components/CartDrawer';
+import FloatingCartButton from './components/FloatingCartButton';
 import CustomerLayout from './components/dashboards/CustomerLayout';
 import DeliveryLayout from './components/dashboards/DeliveryLayout';
 import CustomerProfile from './components/CustomerProfile';
@@ -84,6 +85,16 @@ function AppContent() {
   };
 
   const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const cartTotal = cartItems.reduce((total, item) => {
+    const itemPrice = Number(item.product.price) || 0;
+    const quantity = Number(item.quantity) || 0;
+    const itemTotal = itemPrice * quantity;
+    const extraCost = item.customizations.addedIngredients.reduce((sum, ing) => {
+      const price = Number(ing.price) || 0;
+      return sum + price;
+    }, 0) * quantity;
+    return total + itemTotal + extraCost;
+  }, 0);
 
   // Redirect based on user role
   function HomeRedirect() {
@@ -216,6 +227,15 @@ function AppContent() {
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      {/* Floating Cart Button - Solo para clientes */}
+      {(!user || user.role === 'customer' || !user.role) && (
+        <FloatingCartButton
+          cartCount={cartCount}
+          onClick={() => setIsCartOpen(true)}
+          total={cartTotal}
+        />
+      )}
 
       {/* Cart Drawer */}
       <CartDrawer 

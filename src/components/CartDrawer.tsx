@@ -135,8 +135,8 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems, set
 
                   {item.customizations.specialInstructions && (
                     <div className="mb-2">
-                      <small className="text-info">
-                        Nota: {item.customizations.specialInstructions}
+                      <small className="text-danger fw-bold">
+                        📝 Nota: {item.customizations.specialInstructions}
                       </small>
                     </div>
                   )}

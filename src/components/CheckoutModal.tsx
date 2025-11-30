@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button, Alert, Row, Col, Card, Badge } from 'react-bootstrap';
-import { ShoppingCart, MapPin, Clock, CreditCard, Gift, Tag, Map, Truck, X } from 'lucide-react';
+import { ShoppingCart, MapPin, Clock, CreditCard, Gift, Tag, Map, Truck, X, LogIn, UserPlus } from 'lucide-react';
 import { CartItem } from '../types/index';
 import { orderService } from '../services/orderService';
 import { promotionService } from '../services/promotionService';
@@ -9,6 +9,8 @@ import AddressSelector from './AddressSelector';
 import AddressMapPicker from './AddressMapPicker';
 import { Database } from '../types/database';
 import { validateChileanPhone, validateEmail, validateAddress, validateProductAvailability } from '../utils/validators';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 type DeliveryConfig = Database['public']['Tables']['delivery_config']['Row'];
 
@@ -20,6 +22,9 @@ interface CheckoutModalProps {
 }
 
 export default function CheckoutModal({ show, onHide, cartItems, onOrderSuccess }: CheckoutModalProps) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
   const [formData, setFormData] = useState({
     customerName: '',
     customerPhone: '',
@@ -30,6 +35,18 @@ export default function CheckoutModal({ show, onHide, cartItems, onOrderSuccess 
     pointsUsed: 0,
     couponCode: ''
   });
+  
+  // Cargar datos del usuario si está logueado
+  useEffect(() => {
+    if (user && show) {
+      setFormData(prev => ({
+        ...prev,
+        customerName: user.full_name || prev.customerName,
+        customerPhone: user.phone || prev.customerPhone,
+        customerEmail: user.email || prev.customerEmail
+      }));
+    }
+  }, [user, show]);
   const [deliveryCoords, setDeliveryCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [deliveryConfig, setDeliveryConfig] = useState<DeliveryConfig | null>(null);
@@ -214,11 +231,14 @@ export default function CheckoutModal({ show, onHide, cartItems, onOrderSuccess 
         throw new Error('Error en el cálculo de totales. Por favor, revisa los productos en tu carrito.');
       }
 
+      // Usar email del usuario logueado si está disponible
+      const customerEmail = user?.email || formData.customerEmail || undefined;
+
       // Crear el pedido
       await orderService.createOrder({
         customerName: formData.customerName,
         customerPhone: formData.customerPhone,
-        customerEmail: formData.customerEmail || undefined,
+        customerEmail: customerEmail,
         deliveryType: formData.deliveryType,
         deliveryAddress: formData.deliveryType === 'delivery' ? formData.deliveryAddress : undefined,
         deliveryLatitude: formData.deliveryType === 'delivery' && deliveryCoords ? deliveryCoords.lat : undefined,
@@ -351,6 +371,48 @@ export default function CheckoutModal({ show, onHide, cartItems, onOrderSuccess 
           </Alert>
         )}
         
+        {/* Mensaje si no está logueado */}
+        {!user && (
+          <Alert variant="warning" style={{ borderRadius: '8px', marginBottom: '20px' }}>
+            <div className="d-flex align-items-center gap-2 mb-3">
+              <LogIn size={20} />
+              <strong>Inicia sesión para ganar puntos de lealtad</strong>
+            </div>
+            <p className="mb-3">
+              Para recibir puntos de lealtad y hacer seguimiento de tus pedidos, necesitas iniciar sesión o crear una cuenta.
+            </p>
+            <div className="d-flex gap-2">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  onHide();
+                  navigate('/login');
+                }}
+                className="d-flex align-items-center gap-2"
+              >
+                <LogIn size={16} />
+                Iniciar Sesión
+              </Button>
+              <Button
+                variant="outline-primary"
+                size="sm"
+                onClick={() => {
+                  onHide();
+                  navigate('/register');
+                }}
+                className="d-flex align-items-center gap-2"
+              >
+                <UserPlus size={16} />
+                Crear Cuenta
+              </Button>
+            </div>
+            <p className="text-muted small mt-3 mb-0">
+              Puedes continuar sin cuenta, pero no recibirás puntos de lealtad.
+            </p>
+          </Alert>
+        )}
+        
         <Form onSubmit={handleSubmit}>
           <Row>
             {/* Información del Cliente */}
@@ -412,26 +474,50 @@ export default function CheckoutModal({ show, onHide, cartItems, onOrderSuccess 
                     />
                   </Form.Group>
 
-                  <Form.Group className="mb-3">
-                    <Form.Label style={{ fontWeight: '600', fontSize: '14px', color: '#000', marginBottom: '8px' }}>
-                      Email (Opcional)
-                    </Form.Label>
-                    <Form.Control
-                      type="email"
-                      value={formData.customerEmail}
-                      onChange={(e) => handleInputChange('customerEmail', e.target.value)}
-                      placeholder="tu@email.com"
-                      style={{
-                        borderRadius: '8px',
-                        border: '1px solid #dee2e6',
-                        padding: '12px',
-                        fontSize: '14px'
-                      }}
-                    />
-                    <Form.Text className="text-muted" style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
-                      Para recibir puntos de lealtad
-                    </Form.Text>
-                  </Form.Group>
+                  {user ? (
+                    <Form.Group className="mb-3">
+                      <Form.Label style={{ fontWeight: '600', fontSize: '14px', color: '#000', marginBottom: '8px' }}>
+                        Email
+                      </Form.Label>
+                      <Form.Control
+                        type="email"
+                        value={formData.customerEmail}
+                        disabled
+                        style={{
+                          borderRadius: '8px',
+                          border: '1px solid #dee2e6',
+                          padding: '12px',
+                          fontSize: '14px',
+                          backgroundColor: '#f8f9fa',
+                          cursor: 'not-allowed'
+                        }}
+                      />
+                      <Form.Text className="text-success" style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                        ✅ Email de tu cuenta - Recibirás puntos de lealtad automáticamente
+                      </Form.Text>
+                    </Form.Group>
+                  ) : (
+                    <Form.Group className="mb-3">
+                      <Form.Label style={{ fontWeight: '600', fontSize: '14px', color: '#000', marginBottom: '8px' }}>
+                        Email (Opcional)
+                      </Form.Label>
+                      <Form.Control
+                        type="email"
+                        value={formData.customerEmail}
+                        onChange={(e) => handleInputChange('customerEmail', e.target.value)}
+                        placeholder="tu@email.com"
+                        style={{
+                          borderRadius: '8px',
+                          border: '1px solid #dee2e6',
+                          padding: '12px',
+                          fontSize: '14px'
+                        }}
+                      />
+                      <Form.Text className="text-muted" style={{ fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                        Para recibir puntos de lealtad, inicia sesión o crea una cuenta
+                      </Form.Text>
+                    </Form.Group>
+                  )}
                 </Card.Body>
               </Card>
 
