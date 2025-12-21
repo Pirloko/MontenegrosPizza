@@ -45,35 +45,52 @@ export function SalesChart() {
   const averageSale = data.length > 0 ? totalSales / data.length : 0;
 
   return (
-    <Card className="shadow-sm">
-      <Card.Header className="bg-danger text-white d-flex justify-content-between align-items-center">
-        <div className="d-flex align-items-center gap-2">
-          <TrendingUp size={20} />
-          <strong>Ventas por Período</strong>
+    <Card style={{ border: 'none', borderRadius: '12px' }}>
+      <Card.Header style={{ background: 'transparent', borderBottom: '1px solid #333', padding: '20px' }}>
+        <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center gap-2">
+            <TrendingUp size={20} style={{ color: '#0B6E4F' }} />
+            <strong style={{ color: '#fff', fontWeight: 600 }}>Ventas por Período</strong>
+          </div>
+          <ButtonGroup size="sm">
+            <Button
+              variant={period === 'day' ? 'primary' : 'outline-light'}
+              onClick={() => setPeriod('day')}
+              style={{
+                borderRadius: period === 'day' ? '8px 0 0 8px' : '0',
+                borderColor: '#333',
+                color: period === 'day' ? '#fff' : '#b0b0b0'
+              }}
+            >
+              Hoy
+            </Button>
+            <Button
+              variant={period === 'week' ? 'primary' : 'outline-light'}
+              onClick={() => setPeriod('week')}
+              style={{
+                borderRadius: '0',
+                borderColor: '#333',
+                color: period === 'week' ? '#fff' : '#b0b0b0'
+              }}
+            >
+              Semana
+            </Button>
+            <Button
+              variant={period === 'month' ? 'primary' : 'outline-light'}
+              onClick={() => setPeriod('month')}
+              style={{
+                borderRadius: period === 'month' ? '0 8px 8px 0' : '0',
+                borderColor: '#333',
+                color: period === 'month' ? '#fff' : '#b0b0b0'
+              }}
+            >
+              Mes
+            </Button>
+          </ButtonGroup>
         </div>
-        <ButtonGroup size="sm">
-          <Button
-            variant={period === 'day' ? 'light' : 'outline-light'}
-            onClick={() => setPeriod('day')}
-          >
-            Hoy
-          </Button>
-          <Button
-            variant={period === 'week' ? 'light' : 'outline-light'}
-            onClick={() => setPeriod('week')}
-          >
-            Semana
-          </Button>
-          <Button
-            variant={period === 'month' ? 'light' : 'outline-light'}
-            onClick={() => setPeriod('month')}
-          >
-            Mes
-          </Button>
-        </ButtonGroup>
       </Card.Header>
 
-      <Card.Body>
+      <Card.Body style={{ padding: '24px' }}>
         {error && <Alert variant="danger">{error}</Alert>}
         
         {loading ? (
@@ -91,21 +108,25 @@ export function SalesChart() {
             {/* Estadísticas Rápidas */}
             <div className="row mb-4">
               <div className="col-md-4">
-                <div className="text-center p-3 bg-light rounded">
-                  <small className="text-muted">Total Ventas</small>
-                  <h4 className="text-success mb-0">${totalSales.toLocaleString('es-CL')}</h4>
+                <div className="text-center p-3 rounded" style={{ backgroundColor: '#252525', border: '1px solid #333' }}>
+                  <small className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Total Ventas</small>
+                  <h4 className="mb-0" style={{ color: '#0B6E4F', fontWeight: 700 }}>
+                    ${totalSales.toLocaleString('es-CL')}
+                  </h4>
                 </div>
               </div>
               <div className="col-md-4">
-                <div className="text-center p-3 bg-light rounded">
-                  <small className="text-muted">Promedio</small>
-                  <h4 className="text-primary mb-0">${Math.round(averageSale).toLocaleString('es-CL')}</h4>
+                <div className="text-center p-3 rounded" style={{ backgroundColor: '#252525', border: '1px solid #333' }}>
+                  <small className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Promedio</small>
+                  <h4 className="mb-0" style={{ color: '#17a2b8', fontWeight: 700 }}>
+                    ${Math.round(averageSale).toLocaleString('es-CL')}
+                  </h4>
                 </div>
               </div>
               <div className="col-md-4">
-                <div className="text-center p-3 bg-light rounded">
-                  <small className="text-muted">Pedidos</small>
-                  <h4 className="text-info mb-0">{data.length}</h4>
+                <div className="text-center p-3 rounded" style={{ backgroundColor: '#252525', border: '1px solid #333' }}>
+                  <small className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Pedidos</small>
+                  <h4 className="mb-0" style={{ color: '#fff', fontWeight: 700 }}>{data.length}</h4>
                 </div>
               </div>
             </div>
@@ -113,15 +134,34 @@ export function SalesChart() {
             {/* Gráfico */}
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                <XAxis 
+                  dataKey="date" 
+                  stroke="#b0b0b0"
+                  style={{ fontSize: '12px' }}
+                />
+                <YAxis 
+                  stroke="#b0b0b0"
+                  style={{ fontSize: '12px' }}
+                />
                 <Tooltip 
                   formatter={(value: any) => `$${value.toLocaleString('es-CL')}`}
-                  labelStyle={{ color: '#000' }}
+                  contentStyle={{
+                    backgroundColor: '#1e1e1e',
+                    border: '1px solid #333',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
                 />
-                <Legend />
-                <Bar dataKey="total" fill="#dc3545" name="Ventas" />
+                <Legend 
+                  wrapperStyle={{ color: '#fff' }}
+                />
+                <Bar 
+                  dataKey="total" 
+                  fill="#dc3545" 
+                  name="Ventas"
+                  radius={[8, 8, 0, 0]}
+                />
               </BarChart>
             </ResponsiveContainer>
           </>

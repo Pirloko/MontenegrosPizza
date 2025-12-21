@@ -53,13 +53,15 @@ export function PeakHoursChart() {
   };
 
   return (
-    <Card className="shadow-sm">
-      <Card.Header className="bg-info text-white d-flex align-items-center gap-2">
-        <Clock size={20} />
-        <strong>Horarios Peak de Pedidos</strong>
+    <Card style={{ border: 'none', borderRadius: '12px' }}>
+      <Card.Header style={{ background: 'transparent', borderBottom: '1px solid #333', padding: '20px' }}>
+        <div className="d-flex align-items-center gap-2">
+          <Clock size={20} style={{ color: '#0B6E4F' }} />
+          <strong style={{ color: '#fff', fontWeight: 600 }}>Horarios Peak de Pedidos</strong>
+        </div>
       </Card.Header>
 
-      <Card.Body>
+      <Card.Body style={{ padding: '24px' }}>
         {error && <Alert variant="danger">{error}</Alert>}
         
         {loading ? (
@@ -76,8 +78,16 @@ export function PeakHoursChart() {
           <>
             {/* Info de Hora Peak */}
             {peakHour && (
-              <Alert variant="info" className="mb-4">
-                <TrendingUp size={18} className="me-2" />
+              <Alert 
+                variant="info" 
+                className="mb-4"
+                style={{ 
+                  backgroundColor: 'rgba(11, 110, 79, 0.2)', 
+                  borderColor: '#0B6E4F',
+                  color: '#fff'
+                }}
+              >
+                <TrendingUp size={18} className="me-2" style={{ color: '#0B6E4F' }} />
                 <strong>Hora Peak:</strong> {peakHour.hour} - {peakHour.orders} pedidos
                 <span className="ms-3">
                   (${peakHour.revenue.toLocaleString('es-CL')} en ventas)
@@ -88,13 +98,17 @@ export function PeakHoursChart() {
             {/* Gráfico */}
             <ResponsiveContainer width="100%" height={350}>
               <BarChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                 <XAxis 
                   dataKey="hour" 
                   label={{ value: 'Hora del Día', position: 'insideBottom', offset: -5 }}
+                  stroke="#b0b0b0"
+                  style={{ fontSize: '12px' }}
                 />
                 <YAxis 
                   label={{ value: 'Número de Pedidos', angle: -90, position: 'insideLeft' }}
+                  stroke="#b0b0b0"
+                  style={{ fontSize: '12px' }}
                 />
                 <Tooltip 
                   formatter={(value: any, name: string) => {
@@ -102,9 +116,14 @@ export function PeakHoursChart() {
                     if (name === 'revenue') return [`$${value.toLocaleString('es-CL')}`, 'Ingresos'];
                     return value;
                   }}
-                  labelStyle={{ color: '#000' }}
+                  contentStyle={{
+                    backgroundColor: '#1e1e1e',
+                    border: '1px solid #333',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
                 />
-                <Bar dataKey="orders" name="Pedidos">
+                <Bar dataKey="orders" name="Pedidos" radius={[8, 8, 0, 0]}>
                   {data.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={getBarColor(entry.orders)} />
                   ))}
@@ -116,15 +135,15 @@ export function PeakHoursChart() {
             <div className="d-flex justify-content-center gap-4 mt-3">
               <div className="d-flex align-items-center gap-2">
                 <div style={{ width: '20px', height: '20px', background: '#dc3545', borderRadius: '4px' }}></div>
-                <small>Alta demanda (80%+)</small>
+                <small style={{ color: '#b0b0b0' }}>Alta demanda (80%+)</small>
               </div>
               <div className="d-flex align-items-center gap-2">
                 <div style={{ width: '20px', height: '20px', background: '#ffc107', borderRadius: '4px' }}></div>
-                <small>Media demanda (50-80%)</small>
+                <small style={{ color: '#b0b0b0' }}>Media demanda (50-80%)</small>
               </div>
               <div className="d-flex align-items-center gap-2">
-                <div style={{ width: '20px', height: '20px', background: '#28a745', borderRadius: '4px' }}></div>
-                <small>Baja demanda (&lt;50%)</small>
+                <div style={{ width: '20px', height: '20px', background: '#0B6E4F', borderRadius: '4px' }}></div>
+                <small style={{ color: '#b0b0b0' }}>Baja demanda (&lt;50%)</small>
               </div>
             </div>
           </>

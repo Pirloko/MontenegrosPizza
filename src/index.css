@@ -269,3 +269,285 @@ img {
     gap: 1rem;
   }
 }
+
+/* ===================================
+   ESTILOS DARK MODE - PANEL ADMIN
+   =================================== */
+
+/* Variables para Dark Mode Admin */
+:root {
+  --admin-bg-primary: #0f0f0f;
+  --admin-bg-secondary: #1a1a1a;
+  --admin-bg-tertiary: #252525;
+  --admin-card-bg: #1e1e1e;
+  --admin-card-border: #333333;
+  --admin-text-primary: #ffffff;
+  --admin-text-secondary: #b0b0b0;
+  --admin-text-muted: #6c757d;
+  --admin-border-color: #333333;
+  --admin-shadow: rgba(0, 0, 0, 0.3);
+  --admin-hover-bg: #2a2a2a;
+  --montenegro-green: #0B6E4F;
+  --montenegro-red: #dc3545;
+  --montenegro-green-light: rgba(11, 110, 79, 0.2);
+  --montenegro-red-light: rgba(220, 53, 69, 0.2);
+}
+
+/* Clase para aplicar dark mode al panel admin */
+.admin-dark-mode {
+  background-color: var(--admin-bg-primary) !important;
+  color: var(--admin-text-primary) !important;
+  min-height: 100vh;
+}
+
+.admin-dark-mode .card {
+  background-color: var(--admin-card-bg) !important;
+  border-color: var(--admin-card-border) !important;
+  color: var(--admin-text-primary) !important;
+  box-shadow: 0 4px 6px var(--admin-shadow) !important;
+  transition: all 0.3s ease;
+}
+
+.admin-dark-mode .card:hover {
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+/* Header Admin Dark Mode */
+.admin-dark-mode .navbar {
+  background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%) !important;
+  border-bottom: 2px solid var(--montenegro-red) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Sidebar Admin Dark Mode */
+.admin-dark-mode .admin-sidebar {
+  background-color: var(--admin-bg-secondary) !important;
+  border-right: 1px solid var(--admin-card-border) !important;
+}
+
+.admin-dark-mode .admin-sidebar .nav-link {
+  color: var(--admin-text-secondary) !important;
+  border-radius: 8px;
+  margin: 4px 0;
+  padding: 12px 16px !important;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.admin-dark-mode .admin-sidebar .nav-link:hover {
+  background-color: var(--admin-hover-bg) !important;
+  color: var(--admin-text-primary) !important;
+  transform: translateX(4px);
+}
+
+.admin-dark-mode .admin-sidebar .nav-link.active {
+  background: linear-gradient(135deg, var(--montenegro-green-light) 0%, rgba(11, 110, 79, 0.1) 100%) !important;
+  color: var(--montenegro-green) !important;
+  border-left: 3px solid var(--montenegro-green) !important;
+  font-weight: 600;
+}
+
+.admin-dark-mode .admin-sidebar .nav-link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background-color: var(--montenegro-green);
+  border-radius: 0 2px 2px 0;
+}
+
+/* Tarjetas KPI Dark Mode */
+.admin-dark-mode .kpi-card {
+  background: linear-gradient(135deg, var(--admin-card-bg) 0%, var(--admin-bg-tertiary) 100%) !important;
+  border: 1px solid var(--admin-card-border) !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.5s ease forwards;
+  opacity: 0;
+}
+
+.admin-dark-mode .kpi-card:nth-child(1) { animation-delay: 0.1s; }
+.admin-dark-mode .kpi-card:nth-child(2) { animation-delay: 0.2s; }
+.admin-dark-mode .kpi-card:nth-child(3) { animation-delay: 0.3s; }
+.admin-dark-mode .kpi-card:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-dark-mode .kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5) !important;
+  border-color: var(--montenegro-green) !important;
+}
+
+.admin-dark-mode .kpi-icon-wrapper {
+  background: var(--montenegro-green-light) !important;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+}
+
+.admin-dark-mode .kpi-icon-wrapper.success {
+  background: rgba(11, 110, 79, 0.2) !important;
+}
+
+.admin-dark-mode .kpi-icon-wrapper.danger {
+  background: var(--montenegro-red-light) !important;
+}
+
+.admin-dark-mode .kpi-icon-wrapper.warning {
+  background: rgba(255, 193, 7, 0.2) !important;
+}
+
+.admin-dark-mode .kpi-icon-wrapper.info {
+  background: rgba(23, 162, 184, 0.2) !important;
+}
+
+/* Textos en Dark Mode */
+.admin-dark-mode .text-muted {
+  color: var(--admin-text-muted) !important;
+}
+
+.admin-dark-mode .text-secondary {
+  color: var(--admin-text-secondary) !important;
+}
+
+.admin-dark-mode h1, 
+.admin-dark-mode h2, 
+.admin-dark-mode h3, 
+.admin-dark-mode h4, 
+.admin-dark-mode h5, 
+.admin-dark-mode h6 {
+  color: var(--admin-text-primary) !important;
+}
+
+/* Tablas Dark Mode */
+.admin-dark-mode .table {
+  color: var(--admin-text-primary) !important;
+  background-color: var(--admin-card-bg) !important;
+}
+
+.admin-dark-mode .table thead {
+  background-color: var(--admin-bg-tertiary) !important;
+  color: var(--admin-text-primary) !important;
+}
+
+.admin-dark-mode .table tbody tr {
+  border-color: var(--admin-card-border) !important;
+  transition: all 0.2s ease;
+}
+
+.admin-dark-mode .table tbody tr:hover {
+  background-color: var(--admin-hover-bg) !important;
+  transform: scale(1.01);
+}
+
+/* Formularios Dark Mode */
+.admin-dark-mode .form-control,
+.admin-dark-mode .form-select {
+  background-color: var(--admin-bg-tertiary) !important;
+  border-color: var(--admin-card-border) !important;
+  color: var(--admin-text-primary) !important;
+}
+
+.admin-dark-mode .form-control:focus,
+.admin-dark-mode .form-select:focus {
+  background-color: var(--admin-bg-tertiary) !important;
+  border-color: var(--montenegro-green) !important;
+  color: var(--admin-text-primary) !important;
+  box-shadow: 0 0 0 0.2rem var(--montenegro-green-light) !important;
+}
+
+/* Botones Dark Mode */
+.admin-dark-mode .btn-primary {
+  background: linear-gradient(135deg, var(--montenegro-green) 0%, #0a5a3f 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 8px rgba(11, 110, 79, 0.3) !important;
+}
+
+.admin-dark-mode .btn-primary:hover {
+  background: linear-gradient(135deg, #0d7a58 0%, var(--montenegro-green) 100%) !important;
+  box-shadow: 0 6px 12px rgba(11, 110, 79, 0.4) !important;
+  transform: translateY(-2px);
+}
+
+.admin-dark-mode .btn-danger {
+  background: linear-gradient(135deg, var(--montenegro-red) 0%, #b02a37 100%) !important;
+  border: none !important;
+}
+
+.admin-dark-mode .btn-outline-light {
+  border-color: var(--admin-card-border) !important;
+  color: var(--admin-text-primary) !important;
+}
+
+.admin-dark-mode .btn-outline-light:hover {
+  background-color: var(--admin-hover-bg) !important;
+  border-color: var(--montenegro-green) !important;
+  color: var(--montenegro-green) !important;
+}
+
+/* Badges Dark Mode */
+.admin-dark-mode .badge {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+/* Indicadores de tendencia */
+.trend-up {
+  color: var(--montenegro-green) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trend-down {
+  color: var(--montenegro-red) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Card Headers Dark Mode */
+.admin-dark-mode .card-header {
+  background-color: var(--admin-bg-tertiary) !important;
+  border-bottom: 1px solid var(--admin-card-border) !important;
+  color: var(--admin-text-primary) !important;
+}
+
+/* Scrollbar personalizado para dark mode */
+.admin-dark-mode ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.admin-dark-mode ::-webkit-scrollbar-track {
+  background: var(--admin-bg-secondary);
+}
+
+.admin-dark-mode ::-webkit-scrollbar-thumb {
+  background: var(--admin-card-border);
+  border-radius: 4px;
+}
+
+.admin-dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: var(--montenegro-green);
+}

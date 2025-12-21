@@ -99,26 +99,40 @@ export default function KPIDashboard() {
       {/* Filtros de Fecha */}
       <Row className="mb-4">
         <Col>
-          <Card>
-            <Card.Body>
+          <Card style={{ border: 'none', borderRadius: '12px' }}>
+            <Card.Body style={{ padding: '20px' }}>
               <Form className="d-flex gap-3 align-items-end">
                 <Form.Group style={{ minWidth: '200px' }}>
-                  <Form.Label>Fecha Inicio</Form.Label>
+                  <Form.Label style={{ color: '#b0b0b0', fontWeight: 500, marginBottom: '8px' }}>
+                    Fecha Inicio
+                  </Form.Label>
                   <Form.Control
                     type="date"
                     value={dateRange.start}
                     onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                    style={{ borderRadius: '8px' }}
                   />
                 </Form.Group>
                 <Form.Group style={{ minWidth: '200px' }}>
-                  <Form.Label>Fecha Fin</Form.Label>
+                  <Form.Label style={{ color: '#b0b0b0', fontWeight: 500, marginBottom: '8px' }}>
+                    Fecha Fin
+                  </Form.Label>
                   <Form.Control
                     type="date"
                     value={dateRange.end}
                     onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                    style={{ borderRadius: '8px' }}
                   />
                 </Form.Group>
-                <Button variant="primary" onClick={loadMetrics}>
+                <Button 
+                  variant="primary" 
+                  onClick={loadMetrics}
+                  style={{ 
+                    borderRadius: '8px',
+                    padding: '8px 24px',
+                    fontWeight: 600
+                  }}
+                >
                   Actualizar
                 </Button>
               </Form>
@@ -130,21 +144,25 @@ export default function KPIDashboard() {
       {/* KPIs Principales */}
       <Row className="g-4 mb-4">
         <Col md={3}>
-          <Card className="h-100 border-0 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                  <p className="text-muted mb-1">Ingresos Totales</p>
-                  <h3 className="mb-0">{formatCurrency(metrics.totalRevenue)}</h3>
+          <Card className="h-100 kpi-card border-0">
+            <Card.Body style={{ padding: '24px' }}>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <div style={{ flex: 1 }}>
+                  <p className="text-muted mb-2" style={{ fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Ingresos Totales
+                  </p>
+                  <h3 className="mb-0" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff' }}>
+                    {formatCurrency(metrics.totalRevenue)}
+                  </h3>
                 </div>
-                <div className="bg-primary bg-opacity-10 p-3 rounded">
-                  <DollarSign className="text-primary" size={24} />
+                <div className="kpi-icon-wrapper info">
+                  <DollarSign className="text-info" size={28} style={{ color: '#17a2b8' }} />
                 </div>
               </div>
-              <div className="mt-3">
-                <small className="text-success">
-                  <TrendingUp size={14} className="me-1" />
-                  Hoy: {formatCurrency(metrics.todayRevenue)}
+              <div className="mt-3 pt-3" style={{ borderTop: '1px solid #333' }}>
+                <small className="trend-up">
+                  <TrendingUp size={16} className="me-1" />
+                  <span style={{ fontWeight: 600 }}>Hoy: {formatCurrency(metrics.todayRevenue)}</span>
                 </small>
               </div>
             </Card.Body>
@@ -152,21 +170,25 @@ export default function KPIDashboard() {
         </Col>
 
         <Col md={3}>
-          <Card className="h-100 border-0 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                  <p className="text-muted mb-1">Total Pedidos</p>
-                  <h3 className="mb-0">{metrics.totalOrders}</h3>
+          <Card className="h-100 kpi-card border-0">
+            <Card.Body style={{ padding: '24px' }}>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <div style={{ flex: 1 }}>
+                  <p className="text-muted mb-2" style={{ fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Total Pedidos
+                  </p>
+                  <h3 className="mb-0" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff' }}>
+                    {metrics.totalOrders.toLocaleString()}
+                  </h3>
                 </div>
-                <div className="bg-success bg-opacity-10 p-3 rounded">
-                  <ShoppingBag className="text-success" size={24} />
+                <div className="kpi-icon-wrapper success">
+                  <ShoppingBag className="text-success" size={28} style={{ color: '#0B6E4F' }} />
                 </div>
               </div>
-              <div className="mt-3">
-                <small className="text-success">
-                  <TrendingUp size={14} className="me-1" />
-                  Hoy: {metrics.todayOrders}
+              <div className="mt-3 pt-3" style={{ borderTop: '1px solid #333' }}>
+                <small className="trend-up">
+                  <TrendingUp size={16} className="me-1" />
+                  <span style={{ fontWeight: 600 }}>Hoy: {metrics.todayOrders}</span>
                 </small>
               </div>
             </Card.Body>
@@ -174,19 +196,23 @@ export default function KPIDashboard() {
         </Col>
 
         <Col md={3}>
-          <Card className="h-100 border-0 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                  <p className="text-muted mb-1">Costos Totales</p>
-                  <h3 className="mb-0">{formatCurrency(metrics.totalCosts)}</h3>
+          <Card className="h-100 kpi-card border-0">
+            <Card.Body style={{ padding: '24px' }}>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <div style={{ flex: 1 }}>
+                  <p className="text-muted mb-2" style={{ fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Costos Totales
+                  </p>
+                  <h3 className="mb-0" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff' }}>
+                    {formatCurrency(metrics.totalCosts)}
+                  </h3>
                 </div>
-                <div className="bg-warning bg-opacity-10 p-3 rounded">
-                  <Package className="text-warning" size={24} />
+                <div className="kpi-icon-wrapper warning">
+                  <Package className="text-warning" size={28} style={{ color: '#ffc107' }} />
                 </div>
               </div>
-              <div className="mt-3">
-                <small className="text-muted">
+              <div className="mt-3 pt-3" style={{ borderTop: '1px solid #333' }}>
+                <small className="text-muted" style={{ fontWeight: 500 }}>
                   {((metrics.totalCosts / metrics.totalRevenue) * 100).toFixed(1)}% del ingreso
                 </small>
               </div>
@@ -195,20 +221,26 @@ export default function KPIDashboard() {
         </Col>
 
         <Col md={3}>
-          <Card className="h-100 border-0 shadow-sm">
-            <Card.Body>
-              <div className="d-flex justify-content-between align-items-start mb-2">
-                <div>
-                  <p className="text-muted mb-1">Ganancia Neta</p>
-                  <h3 className="mb-0 text-success">{formatCurrency(metrics.totalProfit)}</h3>
+          <Card className="h-100 kpi-card border-0">
+            <Card.Body style={{ padding: '24px' }}>
+              <div className="d-flex justify-content-between align-items-start mb-3">
+                <div style={{ flex: 1 }}>
+                  <p className="text-muted mb-2" style={{ fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                    Ganancia Neta
+                  </p>
+                  <h3 className="mb-0" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#0B6E4F' }}>
+                    {formatCurrency(metrics.totalProfit)}
+                  </h3>
                 </div>
-                <div className="bg-success bg-opacity-10 p-3 rounded">
-                  <TrendingUp className="text-success" size={24} />
+                <div className="kpi-icon-wrapper success">
+                  <TrendingUp className="text-success" size={28} style={{ color: '#0B6E4F' }} />
                 </div>
               </div>
-              <div className="mt-3">
-                <small className="text-success">
-                  Margen: {((metrics.totalProfit / metrics.totalRevenue) * 100).toFixed(1)}%
+              <div className="mt-3 pt-3" style={{ borderTop: '1px solid #333' }}>
+                <small className="trend-up" style={{ fontSize: '0.9rem' }}>
+                  <span style={{ fontWeight: 600 }}>
+                    Margen: {((metrics.totalProfit / metrics.totalRevenue) * 100).toFixed(1)}%
+                  </span>
                 </small>
               </div>
             </Card.Body>
@@ -219,23 +251,55 @@ export default function KPIDashboard() {
       {/* Gráfico de Ventas por Período */}
       <Row className="mb-4">
         <Col lg={8}>
-          <Card>
-            <Card.Header>
-              <h5 className="mb-0">Ventas por Día</h5>
+          <Card style={{ border: 'none', borderRadius: '12px' }}>
+            <Card.Header style={{ background: 'transparent', borderBottom: '1px solid #333', padding: '20px' }}>
+              <h5 className="mb-0" style={{ color: '#fff', fontWeight: 600 }}>Ventas por Día</h5>
             </Card.Header>
-            <Card.Body>
+            <Card.Body style={{ padding: '24px' }}>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={metrics.salesByPeriod}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" tickFormatter={formatDate} />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                  <XAxis 
+                    dataKey="date" 
+                    tickFormatter={formatDate}
+                    stroke="#b0b0b0"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <YAxis 
+                    stroke="#b0b0b0"
+                    style={{ fontSize: '12px' }}
+                  />
                   <Tooltip 
                     formatter={(value: any) => formatCurrency(value)}
                     labelFormatter={formatDate}
+                    contentStyle={{
+                      backgroundColor: '#1e1e1e',
+                      border: '1px solid #333',
+                      borderRadius: '8px',
+                      color: '#fff'
+                    }}
                   />
-                  <Legend />
-                  <Line type="monotone" dataKey="revenue" stroke="#0B6E4F" name="Ingresos" strokeWidth={2} />
-                  <Line type="monotone" dataKey="orders" stroke="#dc3545" name="Pedidos" strokeWidth={2} />
+                  <Legend 
+                    wrapperStyle={{ color: '#fff' }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#0B6E4F" 
+                    name="Ingresos" 
+                    strokeWidth={3}
+                    dot={{ fill: '#0B6E4F', r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="orders" 
+                    stroke="#dc3545" 
+                    name="Pedidos" 
+                    strokeWidth={3}
+                    dot={{ fill: '#dc3545', r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </Card.Body>
@@ -244,11 +308,11 @@ export default function KPIDashboard() {
 
         {/* Delivery vs Retiro */}
         <Col lg={4}>
-          <Card className="h-100">
-            <Card.Header>
-              <h5 className="mb-0">Delivery vs Retiro</h5>
+          <Card className="h-100" style={{ border: 'none', borderRadius: '12px' }}>
+            <Card.Header style={{ background: 'transparent', borderBottom: '1px solid #333', padding: '20px' }}>
+              <h5 className="mb-0" style={{ color: '#fff', fontWeight: 600 }}>Tipo de Pedido</h5>
             </Card.Header>
-            <Card.Body>
+            <Card.Body style={{ padding: '24px' }}>
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
                   <Pie
@@ -262,20 +326,36 @@ export default function KPIDashboard() {
                     dataKey="value"
                   >
                     {deliveryPieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={index === 0 ? '#0B6E4F' : '#dc3545'} 
+                      />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip 
+                    contentStyle={{
+                      backgroundColor: '#1e1e1e',
+                      border: '1px solid #333',
+                      borderRadius: '8px',
+                      color: '#fff'
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
-              <div className="mt-3">
-                <div className="d-flex justify-content-between mb-2">
-                  <span><Truck size={16} className="me-2 text-primary" />Delivery:</span>
-                  <strong>{formatCurrency(metrics.deliveryVsPickup.deliveryRevenue)}</strong>
+              <div className="mt-3 pt-3" style={{ borderTop: '1px solid #333' }}>
+                <div className="d-flex justify-content-between mb-2 align-items-center">
+                  <span style={{ color: '#b0b0b0' }}>
+                    <Truck size={16} className="me-2" style={{ color: '#0B6E4F' }} />
+                    Delivery:
+                  </span>
+                  <strong style={{ color: '#fff' }}>{formatCurrency(metrics.deliveryVsPickup.deliveryRevenue)}</strong>
                 </div>
-                <div className="d-flex justify-content-between">
-                  <span><Home size={16} className="me-2 text-success" />Retiro:</span>
-                  <strong>{formatCurrency(metrics.deliveryVsPickup.pickupRevenue)}</strong>
+                <div className="d-flex justify-content-between align-items-center">
+                  <span style={{ color: '#b0b0b0' }}>
+                    <Home size={16} className="me-2" style={{ color: '#dc3545' }} />
+                    Retiro:
+                  </span>
+                  <strong style={{ color: '#fff' }}>{formatCurrency(metrics.deliveryVsPickup.pickupRevenue)}</strong>
                 </div>
               </div>
             </Card.Body>
@@ -286,21 +366,44 @@ export default function KPIDashboard() {
       {/* Productos Más Vendidos */}
       <Row className="mb-4">
         <Col lg={6}>
-          <Card>
-            <Card.Header>
-              <h5 className="mb-0 d-flex align-items-center">
-                <Award className="me-2" />
-                Productos Más Vendidos
+          <Card style={{ border: 'none', borderRadius: '12px' }}>
+            <Card.Header style={{ background: 'transparent', borderBottom: '1px solid #333', padding: '20px' }}>
+              <h5 className="mb-0 d-flex align-items-center" style={{ color: '#fff', fontWeight: 600 }}>
+                <Award className="me-2" size={20} style={{ color: '#0B6E4F' }} />
+                Top 10 Productos
               </h5>
             </Card.Header>
-            <Card.Body>
+            <Card.Body style={{ padding: '24px' }}>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={metrics.topProducts.slice(0, 5)} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis dataKey="productName" type="category" width={150} />
-                  <Tooltip formatter={(value: any) => value} />
-                  <Bar dataKey="quantity" fill="#0B6E4F" name="Cantidad Vendida" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                  <XAxis 
+                    type="number" 
+                    stroke="#b0b0b0"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <YAxis 
+                    dataKey="productName" 
+                    type="category" 
+                    width={150}
+                    stroke="#b0b0b0"
+                    style={{ fontSize: '12px' }}
+                  />
+                  <Tooltip 
+                    formatter={(value: any) => value}
+                    contentStyle={{
+                      backgroundColor: '#1e1e1e',
+                      border: '1px solid #333',
+                      borderRadius: '8px',
+                      color: '#fff'
+                    }}
+                  />
+                  <Bar 
+                    dataKey="quantity" 
+                    fill="#0B6E4F" 
+                    name="Cantidad Vendida"
+                    radius={[0, 8, 8, 0]}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </Card.Body>
@@ -309,35 +412,49 @@ export default function KPIDashboard() {
 
         {/* Clientes Frecuentes */}
         <Col lg={6}>
-          <Card>
-            <Card.Header>
-              <h5 className="mb-0 d-flex align-items-center">
-                <Users className="me-2" />
+          <Card style={{ border: 'none', borderRadius: '12px' }}>
+            <Card.Header style={{ background: 'transparent', borderBottom: '1px solid #333', padding: '20px' }}>
+              <h5 className="mb-0 d-flex align-items-center" style={{ color: '#fff', fontWeight: 600 }}>
+                <Users className="me-2" size={20} style={{ color: '#0B6E4F' }} />
                 Clientes Frecuentes
               </h5>
             </Card.Header>
-            <Card.Body>
+            <Card.Body style={{ padding: '24px' }}>
               <div className="table-responsive">
-                <table className="table table-hover">
+                <table className="table table-hover" style={{ marginBottom: 0 }}>
                   <thead>
                     <tr>
-                      <th>Cliente</th>
-                      <th>Pedidos</th>
-                      <th>Total Gastado</th>
+                      <th style={{ color: '#b0b0b0', fontWeight: 600, borderColor: '#333' }}>Cliente</th>
+                      <th style={{ color: '#b0b0b0', fontWeight: 600, borderColor: '#333' }}>Pedidos</th>
+                      <th style={{ color: '#b0b0b0', fontWeight: 600, borderColor: '#333' }}>Total Gastado</th>
                     </tr>
                   </thead>
                   <tbody>
                     {metrics.frequentCustomers.slice(0, 5).map((customer, index) => (
                       <tr key={index}>
-                        <td>
+                        <td style={{ borderColor: '#333' }}>
                           <div>
-                            <strong>{customer.customerName}</strong>
-                            <br />
-                            <small className="text-muted">{customer.customerEmail}</small>
+                            <strong style={{ color: '#fff', display: 'block', marginBottom: '4px' }}>
+                              {customer.customerName}
+                            </strong>
+                            <small className="text-muted" style={{ fontSize: '0.8rem' }}>
+                              {customer.customerEmail}
+                            </small>
                           </div>
                         </td>
-                        <td>{customer.orderCount}</td>
-                        <td><strong>{formatCurrency(customer.totalSpent)}</strong></td>
+                        <td style={{ borderColor: '#333', color: '#fff', verticalAlign: 'middle' }}>
+                          <span className="badge" style={{ 
+                            background: 'rgba(11, 110, 79, 0.2)', 
+                            color: '#0B6E4F',
+                            border: '1px solid #0B6E4F',
+                            padding: '6px 12px'
+                          }}>
+                            {customer.orderCount}
+                          </span>
+                        </td>
+                        <td style={{ borderColor: '#333', verticalAlign: 'middle' }}>
+                          <strong style={{ color: '#0B6E4F' }}>{formatCurrency(customer.totalSpent)}</strong>
+                        </td>
                       </tr>
                     ))}
                   </tbody>

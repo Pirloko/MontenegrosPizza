@@ -39,15 +39,15 @@ export function TopProductsChart() {
   };
 
   return (
-    <Card className="shadow-sm">
-      <Card.Header className="bg-warning d-flex justify-content-between align-items-center">
+    <Card style={{ border: 'none', borderRadius: '12px' }}>
+      <Card.Header style={{ background: 'transparent', borderBottom: '1px solid #333', padding: '20px' }}>
         <div className="d-flex align-items-center gap-2">
-          <Trophy size={20} />
-          <strong>Top {limit} Productos Más Vendidos</strong>
+          <Trophy size={20} style={{ color: '#0B6E4F' }} />
+          <strong style={{ color: '#fff', fontWeight: 600 }}>Top {limit} Productos Más Vendidos</strong>
         </div>
       </Card.Header>
 
-      <Card.Body>
+      <Card.Body style={{ padding: '24px' }}>
         {error && <Alert variant="danger">{error}</Alert>}
         
         {loading ? (
@@ -67,9 +67,20 @@ export function TopProductsChart() {
               {data.map((product, index) => (
                 <div 
                   key={product.product_name}
-                  className="d-flex justify-content-between align-items-center p-3 mb-2 bg-light rounded"
+                  className="d-flex justify-content-between align-items-center p-3 mb-2 rounded"
                   style={{
-                    borderLeft: index < 3 ? `4px solid ${COLORS[index]}` : 'none'
+                    borderLeft: index < 3 ? `4px solid ${COLORS[index]}` : '4px solid #333',
+                    backgroundColor: '#252525',
+                    border: '1px solid #333',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = '#2a2a2a';
+                    e.currentTarget.style.transform = 'translateX(4px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#252525';
+                    e.currentTarget.style.transform = 'translateX(0)';
                   }}
                 >
                   <div className="d-flex align-items-center gap-3">
@@ -77,7 +88,7 @@ export function TopProductsChart() {
                       {getMedalIcon(index)}
                     </span>
                     <div>
-                      <strong>{product.product_name}</strong>
+                      <strong style={{ color: '#fff' }}>{product.product_name}</strong>
                       <br />
                       <small className="text-muted">
                         ${product.revenue.toLocaleString('es-CL')} en ventas
@@ -85,7 +96,15 @@ export function TopProductsChart() {
                     </div>
                   </div>
                   <div className="text-end">
-                    <Badge bg="danger" style={{ fontSize: '1.2rem' }}>
+                    <Badge 
+                      style={{ 
+                        fontSize: '1.2rem',
+                        background: 'rgba(220, 53, 69, 0.2)',
+                        color: '#dc3545',
+                        border: '1px solid #dc3545',
+                        padding: '6px 12px'
+                      }}
+                    >
                       {product.total_sold}
                     </Badge>
                     <br />
@@ -98,14 +117,29 @@ export function TopProductsChart() {
             {/* Gráfico de Barras */}
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={data} layout="horizontal">
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis type="number" />
-                <YAxis dataKey="product_name" type="category" width={150} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                <XAxis 
+                  type="number" 
+                  stroke="#b0b0b0"
+                  style={{ fontSize: '12px' }}
+                />
+                <YAxis 
+                  dataKey="product_name" 
+                  type="category" 
+                  width={150}
+                  stroke="#b0b0b0"
+                  style={{ fontSize: '12px' }}
+                />
                 <Tooltip 
                   formatter={(value: any) => `${value} unidades`}
-                  labelStyle={{ color: '#000' }}
+                  contentStyle={{
+                    backgroundColor: '#1e1e1e',
+                    border: '1px solid #333',
+                    borderRadius: '8px',
+                    color: '#fff'
+                  }}
                 />
-                <Bar dataKey="total_sold" name="Vendidos">
+                <Bar dataKey="total_sold" name="Vendidos" radius={[0, 8, 8, 0]}>
                   {data.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
