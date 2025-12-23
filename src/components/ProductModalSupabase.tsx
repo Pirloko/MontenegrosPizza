@@ -3,15 +3,18 @@ import { Modal, Button, Form, Alert, Spinner } from 'react-bootstrap';
 import { X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { Database } from '../types/database';
 import { ingredientService } from '../services/ingredientService';
+import { categoryService } from '../services/categoryService';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type ExtraIngredient = Database['public']['Tables']['extra_ingredients']['Row'];
+type Category = Database['public']['Tables']['categories']['Row'];
 
 interface ProductModalProps {
   show: boolean;
   onHide: () => void;
   product: Product;
   onAddToCart: (product: Product, customizations: ProductCustomization) => void;
+  categories?: Category[];
 }
 
 interface ProductCustomization {
@@ -21,19 +24,61 @@ interface ProductCustomization {
   specialInstructions: string;
 }
 
-const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAddToCart }) => {
+const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAddToCart, categories = [] }) => {
   const [quantity, setQuantity] = useState(1);
   const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
   const [addedIngredients, setAddedIngredients] = useState<ExtraIngredient[]>([]);
   const [specialInstructions, setSpecialInstructions] = useState('');
   const [availableIngredients, setAvailableIngredients] = useState<ExtraIngredient[]>([]);
   const [loadingIngredients, setLoadingIngredients] = useState(false);
+  const [productCategory, setProductCategory] = useState<Category | null>(null);
+
+  // Verificar si el producto es un bebestible
+  const isBeverage = () => {
+    if (!productCategory) return false;
+    return productCategory.name?.toUpperCase().includes('BEBESTIBLES') || false;
+  };
 
   useEffect(() => {
     if (show) {
-      loadIngredients();
+      // Cargar la categoría del producto
+      const loadCategory = async () => {
+        if (product.category_id) {
+          // Si tenemos categorías pasadas como prop, buscar ahí primero
+          if (categories.length > 0) {
+            const category = categories.find(cat => cat.id === product.category_id);
+            if (category) {
+              setProductCategory(category);
+              return;
+            }
+          }
+          // Si no, cargar desde el servicio
+          try {
+            const category = await categoryService.getById(product.category_id);
+            setProductCategory(category);
+          } catch (error) {
+            console.error('Error loading category:', error);
+          }
+        }
+      };
+      
+      loadCategory();
+    } else {
+      // Resetear cuando el modal se cierra
+      setProductCategory(null);
+      setAvailableIngredients([]);
     }
-  }, [show]);
+  }, [show, product.category_id, categories]);
+
+  // Cargar ingredientes solo cuando sabemos que NO es bebestible
+  useEffect(() => {
+    if (show && productCategory) {
+      const categoryName = productCategory.name?.toUpperCase() || '';
+      if (!categoryName.includes('BEBESTIBLES')) {
+        loadIngredients();
+      }
+    }
+  }, [show, productCategory]);
 
   const loadIngredients = async () => {
     try {
@@ -81,6 +126,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
     setRemovedIngredients([]);
     setAddedIngredients([]);
     setSpecialInstructions('');
+    setProductCategory(null);
+    setAvailableIngredients([]);
   };
 
   const handleClose = () => {
@@ -90,6 +137,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
     setRemovedIngredients([]);
     setAddedIngredients([]);
     setSpecialInstructions('');
+    setProductCategory(null);
+    setAvailableIngredients([]);
   };
 
   return (
@@ -233,191 +282,195 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
           </div>
         </div>
 
-        {/* Ingredientes Extra */}
-        <div className="mb-4">
-          <label className="form-label fw-bold mb-3" style={{ fontSize: '16px', color: '#000' }}>
-            Ingredientes Extra
-          </label>
-          {loadingIngredients ? (
-            <div className="text-center py-3">
-              <Spinner size="sm" />
-              <span className="ms-2">Cargando ingredientes...</span>
-            </div>
-          ) : (
-            <>
-              {/* Ingredientes Básicos */}
-              {availableIngredients.filter(ing => ing.category === 'basic' && ing.is_available).length > 0 && (
-                <div className="mb-4">
-                  <h6 className="text-primary mb-3 fw-bold">
-                    <span className="badge bg-primary me-2">Básicos</span>
-                    Ingredientes Básicos
-                  </h6>
-                  <div 
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                      gap: '12px'
-                    }}
-                  >
-                    {availableIngredients
-                      .filter(ing => ing.category === 'basic' && ing.is_available)
-                      .map((ingredient) => {
-                        const isSelected = addedIngredients.some(ing => ing.id === ingredient.id);
-                        return (
-                          <div
-                            key={ingredient.id}
-                            onClick={() => toggleIngredient(ingredient)}
-                            style={{
-                              padding: '12px 16px',
-                              borderRadius: '8px',
-                              border: `2px solid ${isSelected ? '#0B6E4F' : '#dee2e6'}`,
-                              background: isSelected ? '#f0f9f6' : '#fff',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between'
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!isSelected) {
-                                e.currentTarget.style.borderColor = '#adb5bd';
-                                e.currentTarget.style.background = '#f8f9fa';
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              if (!isSelected) {
-                                e.currentTarget.style.borderColor = '#dee2e6';
-                                e.currentTarget.style.background = '#fff';
-                              }
-                            }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => {}}
-                                style={{
-                                  width: '18px',
-                                  height: '18px',
-                                  cursor: 'pointer',
-                                  accentColor: '#0B6E4F'
-                                }}
-                              />
-                              <span style={{ fontSize: '14px', fontWeight: '500', color: '#000' }}>
-                                {ingredient.name}
+        {/* Ingredientes Extra - Solo mostrar si NO es bebestible */}
+        {!isBeverage() && (
+          <div className="mb-4">
+            <label className="form-label fw-bold mb-3" style={{ fontSize: '16px', color: '#000' }}>
+              Ingredientes Extra
+            </label>
+            {loadingIngredients ? (
+              <div className="text-center py-3">
+                <Spinner size="sm" />
+                <span className="ms-2">Cargando ingredientes...</span>
+              </div>
+            ) : (
+              <>
+                {/* Ingredientes Básicos */}
+                {availableIngredients.filter(ing => ing.category === 'basic' && ing.is_available).length > 0 && (
+                  <div className="mb-4">
+                    <h6 className="text-primary mb-3 fw-bold">
+                      <span className="badge bg-primary me-2">Básicos</span>
+                      Ingredientes Básicos
+                    </h6>
+                    <div 
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                        gap: '12px'
+                      }}
+                    >
+                      {availableIngredients
+                        .filter(ing => ing.category === 'basic' && ing.is_available)
+                        .map((ingredient) => {
+                          const isSelected = addedIngredients.some(ing => ing.id === ingredient.id);
+                          return (
+                            <div
+                              key={ingredient.id}
+                              onClick={() => toggleIngredient(ingredient)}
+                              style={{
+                                padding: '12px 16px',
+                                borderRadius: '8px',
+                                border: `2px solid ${isSelected ? '#0B6E4F' : '#dee2e6'}`,
+                                background: isSelected ? '#f0f9f6' : '#fff',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between'
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!isSelected) {
+                                  e.currentTarget.style.borderColor = '#adb5bd';
+                                  e.currentTarget.style.background = '#f8f9fa';
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!isSelected) {
+                                  e.currentTarget.style.borderColor = '#dee2e6';
+                                  e.currentTarget.style.background = '#fff';
+                                }
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => {}}
+                                  style={{
+                                    width: '18px',
+                                    height: '18px',
+                                    cursor: 'pointer',
+                                    accentColor: '#0B6E4F'
+                                  }}
+                                />
+                                <span style={{ fontSize: '14px', fontWeight: '500', color: '#000' }}>
+                                  {ingredient.name}
+                                </span>
+                              </div>
+                              <span style={{ fontSize: '14px', fontWeight: '600', color: '#0B6E4F' }}>
+                                +${(Number(ingredient.price) || 0).toLocaleString()}
                               </span>
                             </div>
-                            <span style={{ fontSize: '14px', fontWeight: '600', color: '#0B6E4F' }}>
-                              +${(Number(ingredient.price) || 0).toLocaleString()}
-                            </span>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Ingredientes Premium */}
-              {availableIngredients.filter(ing => ing.category === 'premium' && ing.is_available).length > 0 && (
-                <div>
-                  <h6 className="text-warning mb-3 fw-bold">
-                    <span className="badge bg-warning text-dark me-2">Premium</span>
-                    Ingredientes Premium
-                  </h6>
-                  <div 
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                      gap: '12px'
-                    }}
-                  >
-                    {availableIngredients
-                      .filter(ing => ing.category === 'premium' && ing.is_available)
-                      .map((ingredient) => {
-                        const isSelected = addedIngredients.some(ing => ing.id === ingredient.id);
-                        return (
-                          <div
-                            key={ingredient.id}
-                            onClick={() => toggleIngredient(ingredient)}
-                            style={{
-                              padding: '12px 16px',
-                              borderRadius: '8px',
-                              border: `2px solid ${isSelected ? '#ffc107' : '#dee2e6'}`,
-                              background: isSelected ? '#fffbf0' : '#fff',
-                              cursor: 'pointer',
-                              transition: 'all 0.2s',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'space-between'
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!isSelected) {
-                                e.currentTarget.style.borderColor = '#ffc107';
-                                e.currentTarget.style.background = '#fffbf0';
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              if (!isSelected) {
-                                e.currentTarget.style.borderColor = '#dee2e6';
-                                e.currentTarget.style.background = '#fff';
-                              }
-                            }}
-                          >
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                              <input
-                                type="checkbox"
-                                checked={isSelected}
-                                onChange={() => {}}
-                                style={{
-                                  width: '18px',
-                                  height: '18px',
-                                  cursor: 'pointer',
-                                  accentColor: '#ffc107'
-                                }}
-                              />
-                              <span style={{ fontSize: '14px', fontWeight: '500', color: '#000' }}>
-                                {ingredient.name}
+                {/* Ingredientes Premium */}
+                {availableIngredients.filter(ing => ing.category === 'premium' && ing.is_available).length > 0 && (
+                  <div>
+                    <h6 className="text-warning mb-3 fw-bold">
+                      <span className="badge bg-warning text-dark me-2">Premium</span>
+                      Ingredientes Premium
+                    </h6>
+                    <div 
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+                        gap: '12px'
+                      }}
+                    >
+                      {availableIngredients
+                        .filter(ing => ing.category === 'premium' && ing.is_available)
+                        .map((ingredient) => {
+                          const isSelected = addedIngredients.some(ing => ing.id === ingredient.id);
+                          return (
+                            <div
+                              key={ingredient.id}
+                              onClick={() => toggleIngredient(ingredient)}
+                              style={{
+                                padding: '12px 16px',
+                                borderRadius: '8px',
+                                border: `2px solid ${isSelected ? '#ffc107' : '#dee2e6'}`,
+                                background: isSelected ? '#fffbf0' : '#fff',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between'
+                              }}
+                              onMouseEnter={(e) => {
+                                if (!isSelected) {
+                                  e.currentTarget.style.borderColor = '#ffc107';
+                                  e.currentTarget.style.background = '#fffbf0';
+                                }
+                              }}
+                              onMouseLeave={(e) => {
+                                if (!isSelected) {
+                                  e.currentTarget.style.borderColor = '#dee2e6';
+                                  e.currentTarget.style.background = '#fff';
+                                }
+                              }}
+                            >
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => {}}
+                                  style={{
+                                    width: '18px',
+                                    height: '18px',
+                                    cursor: 'pointer',
+                                    accentColor: '#ffc107'
+                                  }}
+                                />
+                                <span style={{ fontSize: '14px', fontWeight: '500', color: '#000' }}>
+                                  {ingredient.name}
+                                </span>
+                              </div>
+                              <span style={{ fontSize: '14px', fontWeight: '600', color: '#ffc107' }}>
+                                +${(Number(ingredient.price) || 0).toLocaleString()}
                               </span>
                             </div>
-                            <span style={{ fontSize: '14px', fontWeight: '600', color: '#ffc107' }}>
-                              +${(Number(ingredient.price) || 0).toLocaleString()}
-                            </span>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {availableIngredients.filter(ing => ing.is_available).length === 0 && (
-                <div className="text-center py-3 text-muted">
-                  No hay ingredientes disponibles
-                </div>
-              )}
-            </>
-          )}
-        </div>
+                {availableIngredients.filter(ing => ing.is_available).length === 0 && (
+                  <div className="text-center py-3 text-muted">
+                    No hay ingredientes disponibles
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
 
-        {/* Instrucciones Especiales */}
-        <div className="mb-4">
-          <Form.Label className="fw-bold mb-3" style={{ fontSize: '16px', color: '#000' }}>
-            Instrucciones Especiales
-          </Form.Label>
-          <Form.Control
-            as="textarea"
-            rows={3}
-            value={specialInstructions}
-            onChange={(e) => setSpecialInstructions(e.target.value)}
-            placeholder="Ej: Sin cebolla, bien cocida..."
-            style={{
-              borderRadius: '8px',
-              border: '1px solid #dee2e6',
-              padding: '12px',
-              fontSize: '14px',
-              resize: 'vertical'
-            }}
-          />
-        </div>
+        {/* Instrucciones Especiales - Solo mostrar si NO es bebestible */}
+        {!isBeverage() && (
+          <div className="mb-4">
+            <Form.Label className="fw-bold mb-3" style={{ fontSize: '16px', color: '#000' }}>
+              Instrucciones Especiales
+            </Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              value={specialInstructions}
+              onChange={(e) => setSpecialInstructions(e.target.value)}
+              placeholder="Ej: Sin cebolla, bien cocida..."
+              style={{
+                borderRadius: '8px',
+                border: '1px solid #dee2e6',
+                padding: '12px',
+                fontSize: '14px',
+                resize: 'vertical'
+              }}
+            />
+          </div>
+        )}
 
         {/* Total */}
         <div 

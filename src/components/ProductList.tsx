@@ -173,6 +173,7 @@ export default function ProductList({ products, categories, categoryName, onAddT
           onHide={() => setSelectedProduct(null)}
           product={selectedProduct}
           onAddToCart={onAddToCart}
+          categories={categories}
         />
       )}
     </div>

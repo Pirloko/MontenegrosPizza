@@ -1,4 +1,3 @@
-import React from 'react';
 import { MapPin, Phone, Clock, Mail, Instagram, Facebook } from 'lucide-react';
 
 const Footer = () => {
@@ -12,8 +11,8 @@ const Footer = () => {
               <MapPin className="mr-2" size={20} />
               Ubicación
             </h3>
-            <p className="mb-2">Av. Bernardo O'Higgins 1234</p>
-            <p>La Serena, Chile</p>
+            <p className="mb-2">Av. Diego de Almagro #1059</p>
+            <p>Rancagua, Chile</p>
           </div>
 
           {/* Horario */}
@@ -34,7 +33,7 @@ const Footer = () => {
               {/* Teléfono */}
               <div className="flex items-center">
                 <Phone className="mr-2" size={20} />
-                <a href="tel:+56923736818" className="hover:text-green-500 transition-colors">
+                <a href="tel:+56 9 6619 5132" className="hover:text-green-500 transition-colors">
                   +56 9 2373 6818
                 </a>
               </div>
@@ -50,7 +49,7 @@ const Footer = () => {
               {/* Redes Sociales */}
               <div className="flex items-center space-x-4 mt-4">
                 <a 
-                  href="https://instagram.com/montenegros" 
+                  href="https://www.instagram.com/montenegrospizza/?fbclid=IwY2xjawO3EcVleHRuA2FlbQIxMABicmlkETE2eVdzeHRURUV5Y0xGbW1mc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHtFTBS3Hq3oR-z1CgLwZa1mVGT2KjfRb9qaVAcKBGzNktEd481AcWHbnlkh-_aem_QK0qnoTaRmhHZMONcpAYXw" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-green-500 transition-colors"
@@ -58,7 +57,7 @@ const Footer = () => {
                   <Instagram size={24} />
                 </a>
                 <a 
-                  href="https://facebook.com/montenegros" 
+                  href="https://www.facebook.com/profile.php?id=100057590403740&locale=es_LA" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-green-500 transition-colors"
@@ -73,6 +72,17 @@ const Footer = () => {
         {/* Copyright */}
         <div className="mt-8 pt-4 border-t border-gray-800 text-center text-sm">
           <p>&copy; {new Date().getFullYear()} Montenegro's Pizza. Todos los derechos reservados.</p>
+          <p className="mt-2 text-gray-400">
+            Desarrollado por{' '}
+            <a 
+              href="https://ancodevs.cl" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hover:text-green-500 transition-colors"
+            >
+              ancodevs.cl
+            </a>
+          </p>
         </div>
       </div>
     </footer>
