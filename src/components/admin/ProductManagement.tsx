@@ -460,7 +460,7 @@ export default function ProductManagement() {
                       onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
                       required
                       min={0}
-                      step={100}
+                      step={1}
                       style={{ fontSize: '15px', padding: '10px' }}
                     />
                   </InputGroup>
@@ -476,7 +476,7 @@ export default function ProductManagement() {
                       value={formData.cost}
                       onChange={(e) => setFormData({ ...formData, cost: parseFloat(e.target.value) })}
                       min={0}
-                      step={100}
+                      step={1}
                       style={{ fontSize: '15px', padding: '10px' }}
                     />
                   </InputGroup>
