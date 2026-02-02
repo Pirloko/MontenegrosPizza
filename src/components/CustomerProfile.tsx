@@ -90,24 +90,18 @@ export default function CustomerProfile() {
   };
 
   const getStatusBadge = (status: string, deliveryType?: string) => {
-    const statusConfig = {
-      'received': { variant: 'primary', icon: Clock, text: 'Recibido' },
-      'preparing': { variant: 'warning', icon: Package, text: 'Preparando' },
-      'ready': { 
-        variant: 'info', 
-        icon: CheckCircle, 
-        text: deliveryType === 'pickup' ? 'Listo para retirar' : 'Listo para entrega'
-      },
-      'on_the_way': { variant: 'secondary', icon: Truck, text: 'En Camino' },
-      'delivered': { variant: 'success', icon: CheckCircle, text: 'Entregado' },
-      'cancelled': { variant: 'danger', icon: XCircle, text: 'Cancelado' }
+    const statusConfig: Record<string, { badgeClass: string; icon: typeof Clock; text: string }> = {
+      received: { badgeClass: 'order-badge-received', icon: Clock, text: 'Recibido' },
+      preparing: { badgeClass: 'order-badge-preparing', icon: Package, text: 'Preparando' },
+      ready: { badgeClass: 'order-badge-ready', icon: CheckCircle, text: deliveryType === 'pickup' ? 'Listo para retirar' : 'Listo para entrega' },
+      on_the_way: { badgeClass: 'order-badge-on_the_way', icon: Truck, text: 'En Camino' },
+      delivered: { badgeClass: 'order-badge-delivered', icon: CheckCircle, text: 'Entregado' },
+      cancelled: { badgeClass: 'order-badge-cancelled', icon: XCircle, text: 'Cancelado' }
     };
-
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.received;
+    const config = statusConfig[status] || statusConfig.received;
     const IconComponent = config.icon;
-
     return (
-      <Badge bg={config.variant} className="d-flex align-items-center gap-1">
+      <Badge className={`d-inline-flex align-items-center gap-1 ${config.badgeClass}`} style={{ padding: '6px 12px', borderRadius: '8px', border: 'none' }}>
         <IconComponent size={12} />
         {config.text}
       </Badge>
@@ -128,8 +122,8 @@ export default function CustomerProfile() {
     return (
       <Container className="py-5">
         <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-3">Cargando perfil...</p>
+          <Spinner animation="border" style={{ color: '#00C853' }} />
+          <p className="mt-3 text-brand-gray-muted">Cargando perfil...</p>
         </div>
       </Container>
     );
@@ -140,41 +134,43 @@ export default function CustomerProfile() {
       <Row className="g-4">
         {/* Información del Usuario */}
         <Col lg={4}>
-          <Card className="shadow-sm h-100">
+          <Card className="panel-card h-100">
             <Card.Body className="p-4">
               <div className="text-center mb-4">
-                <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                     style={{ width: '80px', height: '80px' }}>
+                <div
+                  className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                  style={{ width: '80px', height: '80px', background: 'linear-gradient(135deg, #00C853 0%, #00A843 100%)', color: '#1a1a1a' }}
+                >
                   <User size={32} />
                 </div>
-                <h4 className="mb-1">{user?.full_name || 'Usuario'}</h4>
-                <p className="text-muted mb-0">{user?.email}</p>
+                <h4 className="mb-1 fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>{user?.full_name || 'Usuario'}</h4>
+                <p className="text-brand-gray-muted mb-0 small">{user?.email}</p>
               </div>
 
               {/* Puntos de Lealtad */}
-              <Card className="bg-warning text-dark mb-3">
+              <Card className="border-0 mb-3 rounded-3 overflow-hidden" style={{ background: 'linear-gradient(135deg, rgba(255,213,79,0.2) 0%, rgba(255,248,225,0.5) 100%)', border: '1px solid rgba(255,213,79,0.3)' }}>
                 <Card.Body className="text-center py-3">
-                  <Award size={24} className="mb-2" />
-                  <h3 className="mb-1">{user?.loyalty_points || 0}</h3>
-                  <p className="mb-0 small">Puntos de Lealtad</p>
+                  <Award size={24} className="mb-2" style={{ color: '#E65100' }} />
+                  <h3 className="mb-1 fw-bold" style={{ color: '#1a1a1a' }}>{user?.loyalty_points || 0}</h3>
+                  <p className="mb-0 small text-brand-gray-muted">Puntos de Lealtad</p>
                 </Card.Body>
               </Card>
 
               {/* Información Adicional */}
-              <div className="border-top pt-3">
-                <h6 className="fw-bold mb-3">Información de Cuenta</h6>
+              <div className="border-top pt-3" style={{ borderColor: '#eee !important' }}>
+                <h6 className="fw-bold mb-3" style={{ color: '#1a1a1a' }}>Información de Cuenta</h6>
                 <div className="mb-2">
-                  <small className="text-muted">Miembro desde:</small>
-                  <p className="mb-0">{user?.created_at ? formatDate(user.created_at) : 'No disponible'}</p>
+                  <small className="text-brand-gray-muted">Miembro desde:</small>
+                  <p className="mb-0" style={{ color: '#1a1a1a' }}>{user?.created_at ? formatDate(user.created_at) : 'No disponible'}</p>
                 </div>
                 <div className="mb-2">
-                  <small className="text-muted">Total de pedidos:</small>
-                  <p className="mb-0">{orders.length}</p>
+                  <small className="text-brand-gray-muted">Total de pedidos:</small>
+                  <p className="mb-0 fw-semibold" style={{ color: '#1a1a1a' }}>{orders.length}</p>
                 </div>
                 <div>
-                  <small className="text-muted">Estado:</small>
+                  <small className="text-brand-gray-muted">Estado:</small>
                   <p className="mb-0">
-                    <Badge bg="success">Activo</Badge>
+                    <Badge className="order-badge-delivered" style={{ padding: '6px 12px', borderRadius: '8px' }}>Activo</Badge>
                   </p>
                 </div>
               </div>
@@ -184,14 +180,14 @@ export default function CustomerProfile() {
 
         {/* Historial de Pedidos */}
         <Col lg={8}>
-          <Card className="shadow-sm">
-            <Card.Header className="bg-white border-bottom">
+          <Card className="panel-card">
+            <Card.Header className="bg-white">
               <div className="d-flex align-items-center justify-content-between">
-                <h5 className="mb-0 d-flex align-items-center">
-                  <History size={20} className="me-2" />
+                <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                  <History size={20} className="me-2" style={{ color: '#00C853' }} />
                   Historial de Pedidos
                 </h5>
-                <Button variant="outline-primary" size="sm" onClick={loadOrders}>
+                <Button variant="outline-secondary" size="sm" className="rounded-3" onClick={loadOrders}>
                   Actualizar
                 </Button>
               </div>
@@ -204,10 +200,12 @@ export default function CustomerProfile() {
               )}
 
               {orders.length === 0 ? (
-                <div className="text-center py-5">
-                  <Package size={48} className="text-muted mb-3" />
-                  <h6 className="text-muted">No tienes pedidos aún</h6>
-                  <p className="text-muted small">Cuando hagas tu primer pedido, aparecerá aquí.</p>
+                <div className="panel-empty-state">
+                  <div className="display-icon">
+                    <Package size={40} />
+                  </div>
+                  <h6 className="fw-semibold mb-2">No tienes pedidos aún</h6>
+                  <p className="small mb-0">Cuando hagas tu primer pedido, aparecerá aquí.</p>
                 </div>
               ) : (
                 <>
@@ -217,8 +215,8 @@ export default function CustomerProfile() {
                     if (activeOrders.length > 0) {
                       return (
                         <>
-                          <div className="px-3 py-2 bg-light border-bottom">
-                            <strong className="text-primary">🔔 Pedidos Activos ({activeOrders.length})</strong>
+                          <div className="px-4 py-3 border-bottom" style={{ backgroundColor: 'rgba(0,200,83,0.06)', borderColor: '#eee' }}>
+                            <strong style={{ color: '#00C853' }}>🔔 Pedidos Activos ({activeOrders.length})</strong>
                           </div>
                           <div className="list-group list-group-flush">
                             {activeOrders.map((order) => (
@@ -272,10 +270,11 @@ export default function CustomerProfile() {
                                   </div>
                                 </div>
                                 <div className="d-flex justify-content-between align-items-center">
-                                  <span className="fw-bold">${order.total.toLocaleString()}</span>
+                                  <span className="fw-bold" style={{ color: '#00C853' }}>${order.total.toLocaleString('es-CL')}</span>
                                   <Button
-                                    variant="outline-primary"
+                                    variant="outline-secondary"
                                     size="sm"
+                                    className="rounded-3"
                                     onClick={() => handleShowDetails(order)}
                                   >
                                     Ver Detalles
@@ -296,8 +295,8 @@ export default function CustomerProfile() {
                     if (historyOrders.length > 0) {
                       return (
                         <>
-                          <div className="px-3 py-2 bg-light border-bottom">
-                            <strong className="text-muted">📋 Historial ({historyOrders.length})</strong>
+                          <div className="px-4 py-3 border-bottom" style={{ backgroundColor: '#F5F5F5', borderColor: '#eee' }}>
+                            <strong className="text-brand-gray-muted">📋 Historial ({historyOrders.length})</strong>
                           </div>
                           <div className="list-group list-group-flush">
                             {historyOrders.map((order) => (
@@ -322,17 +321,17 @@ export default function CustomerProfile() {
                                       Ver Detalles
                                     </Button>
                                     {order.status === 'delivered' && !ratedOrders.has(order.id) && (
-                                      <Button
-                                        variant="warning"
-                                        size="sm"
-                                        onClick={() => handleOpenRatingModal(order)}
-                                      >
-                                        <Star size={14} className="me-1" />
-                                        Calificar
-                                      </Button>
+                                    <Button
+                                      size="sm"
+                                      className="rounded-3 panel-btn-primary"
+                                      onClick={() => handleOpenRatingModal(order)}
+                                    >
+                                      <Star size={14} className="me-1" />
+                                      Calificar
+                                    </Button>
                                     )}
                                     {ratedOrders.has(order.id) && (
-                                      <Badge bg="success" className="align-self-center">
+                                      <Badge className="order-badge-delivered align-self-center" style={{ padding: '6px 10px' }}>
                                         ✓ Calificado
                                       </Badge>
                                     )}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Alert, Spinner } from 'react-bootstrap';
+import { Modal, Button, Form, Spinner } from 'react-bootstrap';
 import { X, Plus, Minus, ShoppingCart } from 'lucide-react';
 import { Database } from '../types/database';
 import { ingredientService } from '../services/ingredientService';
@@ -33,7 +33,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
   const [loadingIngredients, setLoadingIngredients] = useState(false);
   const [productCategory, setProductCategory] = useState<Category | null>(null);
 
-  // Verificar si el producto es un bebestible
   const isBeverage = () => {
     if (!productCategory) return false;
     return productCategory.name?.toUpperCase().includes('BEBESTIBLES') || false;
@@ -41,10 +40,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
 
   useEffect(() => {
     if (show) {
-      // Cargar la categoría del producto
       const loadCategory = async () => {
         if (product.category_id) {
-          // Si tenemos categorías pasadas como prop, buscar ahí primero
           if (categories.length > 0) {
             const category = categories.find(cat => cat.id === product.category_id);
             if (category) {
@@ -52,7 +49,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
               return;
             }
           }
-          // Si no, cargar desde el servicio
           try {
             const category = await categoryService.getById(product.category_id);
             setProductCategory(category);
@@ -61,22 +57,17 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
           }
         }
       };
-      
       loadCategory();
     } else {
-      // Resetear cuando el modal se cierra
       setProductCategory(null);
       setAvailableIngredients([]);
     }
   }, [show, product.category_id, categories]);
 
-  // Cargar ingredientes solo cuando sabemos que NO es bebestible
   useEffect(() => {
     if (show && productCategory) {
       const categoryName = productCategory.name?.toUpperCase() || '';
-      if (!categoryName.includes('BEBESTIBLES')) {
-        loadIngredients();
-      }
+      if (!categoryName.includes('BEBESTIBLES')) loadIngredients();
     }
   }, [show, productCategory]);
 
@@ -100,28 +91,22 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
     }
   };
 
-  const calculateExtraCost = () => {
-    return addedIngredients.reduce((total, ing) => total + (Number(ing.price) || 0), 0);
-  };
+  const calculateExtraCost = () =>
+    addedIngredients.reduce((total, ing) => total + (Number(ing.price) || 0), 0);
 
   const calculateTotal = () => {
     const basePrice = Number(product.price) || 0;
-    const extraCost = calculateExtraCost();
-    return (basePrice + extraCost) * quantity;
+    return (basePrice + calculateExtraCost()) * quantity;
   };
 
   const handleAddToCart = () => {
-    const customizations: ProductCustomization = {
+    onAddToCart(product, {
       quantity,
       removedIngredients,
       addedIngredients,
-      specialInstructions
-    };
-    
-    onAddToCart(product, customizations);
+      specialInstructions,
+    });
     onHide();
-    
-    // Reset form
     setQuantity(1);
     setRemovedIngredients([]);
     setAddedIngredients([]);
@@ -132,7 +117,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
 
   const handleClose = () => {
     onHide();
-    // Reset form
     setQuantity(1);
     setRemovedIngredients([]);
     setAddedIngredients([]);
@@ -141,319 +125,279 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
     setAvailableIngredients([]);
   };
 
+  const basePrice = Number(product.price) || 0;
+  const isBev = isBeverage();
+
   return (
-    <Modal 
-      show={show} 
-      onHide={handleClose} 
-      size="lg" 
+    <Modal
+      show={show}
+      onHide={handleClose}
+      size="lg"
       centered
-      contentClassName="border-0"
-      style={{ borderRadius: '16px', overflow: 'hidden' }}
+      contentClassName="border-0 modal-product-custom overflow-hidden"
+      style={{ borderRadius: '1.25rem' }}
     >
-      {/* Header con gradiente usando paleta del logo (negro a verde) */}
+      {/* Header prominente con imagen grande */}
       <div
+        className="modal-header-custom position-relative"
         style={{
-          background: 'linear-gradient(135deg, #000000 0%, #0B6E4F 100%)',
-          padding: '24px',
+          background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%)',
+          padding: 0,
           color: 'white',
-          position: 'relative'
+          minHeight: '220px',
         }}
       >
-        <button
-          onClick={handleClose}
+        {/* Imagen del producto en tamaño grande */}
+        <div
+          className="position-absolute top-0 start-0 w-100 h-100 opacity-30"
           style={{
-            position: 'absolute',
-            top: '16px',
-            right: '16px',
-            background: 'transparent',
-            border: 'none',
-            color: 'white',
-            fontSize: '24px',
-            cursor: 'pointer',
-            width: '32px',
-            height: '32px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            borderRadius: '50%',
-            transition: 'background-color 0.2s'
+            backgroundImage: `url(${product.image_url || '/images/logo.jpeg'})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
           }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+        />
+        <div
+          className="position-absolute top-0 start-0 w-100 h-100"
+          style={{
+            background: 'linear-gradient(to bottom, transparent 0%, rgba(26,26,26,0.7) 60%, rgba(26,26,26,0.95) 100%)',
           }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-          }}
-        >
-          <X size={20} />
-        </button>
-        <h2 style={{ margin: 0, fontSize: '28px', fontWeight: 'bold', marginBottom: '8px' }}>
-          {product.name}
-        </h2>
-        <p style={{ margin: 0, fontSize: '14px', opacity: 0.9 }}>
-          {product.description}
-        </p>
+        />
+        <div className="position-relative d-flex align-items-end p-4 pb-3" style={{ minHeight: '220px', zIndex: 1 }}>
+          <div className="flex-grow-1 pe-5">
+            <h2
+              className="mb-1 fw-bold"
+              style={{
+                fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+                textShadow: '0 2px 8px rgba(0,0,0,0.5)',
+                fontFamily: 'Georgia, Cambria, serif',
+              }}
+            >
+              {product.name}
+            </h2>
+            <p className="mb-0 small opacity-90" style={{ fontSize: '0.95rem' }}>
+              {product.description}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleClose}
+            className="btn-close-modal position-absolute top-0 end-0 m-3 d-flex align-items-center justify-content-center rounded-circle border-0"
+            style={{
+              width: '40px',
+              height: '40px',
+              background: 'rgba(255,255,255,0.15)',
+              color: 'white',
+              cursor: 'pointer',
+              transition: 'background 0.2s ease, transform 0.2s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.25)';
+              e.currentTarget.style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+              e.currentTarget.style.transform = 'scale(1)';
+            }}
+          >
+            <X size={22} />
+          </button>
+        </div>
       </div>
 
-      <Modal.Body style={{ padding: '24px', maxHeight: '80vh', overflowY: 'auto' }}>
+      <Modal.Body className="p-4" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
         {/* Precio base */}
-        <div className="mb-4" style={{ paddingBottom: '16px', borderBottom: '1px solid #e9ecef' }}>
+        <div className="mb-4 pb-3" style={{ borderBottom: '1px solid #eee' }}>
           <div className="d-flex justify-content-between align-items-center">
-            <span style={{ fontSize: '14px', color: '#6c757d' }}>Precio base:</span>
-            <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#000' }}>
-              ${(Number(product.price) || 0).toLocaleString()}
+            <span className="text-muted small">Precio base</span>
+            <span className="fw-bold fs-5 text-brand-black">
+              ${basePrice.toLocaleString('es-CL')}
             </span>
           </div>
         </div>
 
         {/* Cantidad */}
         <div className="mb-4">
-          <label className="form-label fw-bold mb-3" style={{ fontSize: '16px', color: '#000' }}>
+          <label className="form-label fw-semibold mb-2" style={{ color: '#1a1a1a', fontSize: '1rem' }}>
             Cantidad
           </label>
-          <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-2">
             <button
+              type="button"
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="btn-qty rounded-3 border d-flex align-items-center justify-content-center"
               style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '8px',
-                border: '1px solid #dee2e6',
-                background: '#f8f9fa',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#e9ecef';
-                e.currentTarget.style.borderColor = '#adb5bd';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#f8f9fa';
-                e.currentTarget.style.borderColor = '#dee2e6';
+                width: '44px',
+                height: '44px',
+                borderColor: '#e0e0e0 !important',
+                background: '#FFF8E1',
+                color: '#424242',
+                transition: 'all 0.2s ease',
               }}
             >
-              <Minus size={18} color="#495057" />
+              <Minus size={18} />
             </button>
             <div
+              className="rounded-3 d-flex align-items-center justify-content-center fw-bold"
               style={{
-                minWidth: '60px',
-                height: '40px',
-                borderRadius: '8px',
-                background: '#fff',
-                border: '1px solid #dee2e6',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '18px',
-                fontWeight: 'bold',
-                color: '#000'
+                minWidth: '56px',
+                height: '44px',
+                background: '#F5F5F5',
+                border: '1px solid #e0e0e0',
+                fontSize: '1.1rem',
+                color: '#1a1a1a',
               }}
             >
               {quantity}
             </div>
             <button
+              type="button"
               onClick={() => setQuantity(quantity + 1)}
+              className="btn-qty rounded-3 border d-flex align-items-center justify-content-center"
               style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '8px',
-                border: '1px solid #dee2e6',
-                background: '#f8f9fa',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#e9ecef';
-                e.currentTarget.style.borderColor = '#adb5bd';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#f8f9fa';
-                e.currentTarget.style.borderColor = '#dee2e6';
+                width: '44px',
+                height: '44px',
+                borderColor: '#e0e0e0 !important',
+                background: '#FFF8E1',
+                color: '#424242',
+                transition: 'all 0.2s ease',
               }}
             >
-              <Plus size={18} color="#495057" />
+              <Plus size={18} />
             </button>
           </div>
         </div>
 
-        {/* Ingredientes Extra - Solo mostrar si NO es bebestible */}
-        {!isBeverage() && (
-          <div className="mb-4">
-            <label className="form-label fw-bold mb-3" style={{ fontSize: '16px', color: '#000' }}>
-              Ingredientes Extra
-            </label>
-            {loadingIngredients ? (
-              <div className="text-center py-3">
-                <Spinner size="sm" />
-                <span className="ms-2">Cargando ingredientes...</span>
-              </div>
-            ) : (
-              <>
-                {/* Ingredientes Básicos */}
-                {availableIngredients.filter(ing => ing.category === 'basic' && ing.is_available).length > 0 && (
-                  <div className="mb-4">
-                    <h6 className="text-primary mb-3 fw-bold">
-                      <span className="badge bg-primary me-2">Básicos</span>
-                      Ingredientes Básicos
-                    </h6>
-                    <div 
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                        gap: '12px'
-                      }}
-                    >
-                      {availableIngredients
-                        .filter(ing => ing.category === 'basic' && ing.is_available)
-                        .map((ingredient) => {
-                          const isSelected = addedIngredients.some(ing => ing.id === ingredient.id);
-                          return (
-                            <div
-                              key={ingredient.id}
-                              onClick={() => toggleIngredient(ingredient)}
-                              style={{
-                                padding: '12px 16px',
-                                borderRadius: '8px',
-                                border: `2px solid ${isSelected ? '#0B6E4F' : '#dee2e6'}`,
-                                background: isSelected ? '#f0f9f6' : '#fff',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between'
-                              }}
-                              onMouseEnter={(e) => {
-                                if (!isSelected) {
-                                  e.currentTarget.style.borderColor = '#adb5bd';
-                                  e.currentTarget.style.background = '#f8f9fa';
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                if (!isSelected) {
-                                  e.currentTarget.style.borderColor = '#dee2e6';
-                                  e.currentTarget.style.background = '#fff';
-                                }
-                              }}
-                            >
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="section-divider" />
+
+        {/* Ingredientes Extra */}
+        {!isBev && (
+          <>
+            <div className="mb-4">
+              <label className="form-label fw-semibold mb-3" style={{ color: '#1a1a1a', fontSize: '1rem' }}>
+                Ingredientes Extra
+              </label>
+              {loadingIngredients ? (
+                <div className="text-center py-3">
+                  <Spinner size="sm" />
+                  <span className="ms-2 text-muted">Cargando...</span>
+                </div>
+              ) : (
+                <>
+                  {availableIngredients.filter(ing => ing.category === 'basic' && ing.is_available).length > 0 && (
+                    <div className="mb-4">
+                      <h6 className="mb-2 fw-semibold" style={{ color: '#424242', fontSize: '0.9rem' }}>
+                        Básicos
+                      </h6>
+                      <div className="d-flex flex-wrap gap-2">
+                        {availableIngredients
+                          .filter(ing => ing.category === 'basic' && ing.is_available)
+                          .map((ingredient) => {
+                            const isSelected = addedIngredients.some(ing => ing.id === ingredient.id);
+                            return (
+                              <label
+                                key={ingredient.id}
+                                className="ingredient-chip mb-0 rounded-3 border d-flex align-items-center gap-2 px-3 py-2"
+                                style={{
+                                  cursor: 'pointer',
+                                  borderWidth: '2px',
+                                  borderColor: isSelected ? '#00C853' : '#e0e0e0',
+                                  background: isSelected ? 'rgba(0,200,83,0.08)' : '#fff',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
                                 <input
                                   type="checkbox"
                                   checked={isSelected}
-                                  onChange={() => {}}
+                                  onChange={() => toggleIngredient(ingredient)}
+                                  className="d-none"
+                                />
+                                <span
+                                  className="rounded-circle d-inline-block"
                                   style={{
                                     width: '18px',
                                     height: '18px',
-                                    cursor: 'pointer',
-                                    accentColor: '#0B6E4F'
+                                    border: '2px solid ' + (isSelected ? '#00C853' : '#bdbdbd'),
+                                    background: isSelected ? '#00C853' : 'transparent',
+                                    transition: 'all 0.2s ease',
                                   }}
                                 />
-                                <span style={{ fontSize: '14px', fontWeight: '500', color: '#000' }}>
+                                <span style={{ fontSize: '0.9rem', fontWeight: '500', color: '#1a1a1a' }}>
                                   {ingredient.name}
                                 </span>
-                              </div>
-                              <span style={{ fontSize: '14px', fontWeight: '600', color: '#0B6E4F' }}>
-                                +${(Number(ingredient.price) || 0).toLocaleString()}
-                              </span>
-                            </div>
-                          );
-                        })}
+                                <span className="fw-semibold small" style={{ color: '#00C853' }}>
+                                  +${(Number(ingredient.price) || 0).toLocaleString('es-CL')}
+                                </span>
+                              </label>
+                            );
+                          })}
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                {/* Ingredientes Premium */}
-                {availableIngredients.filter(ing => ing.category === 'premium' && ing.is_available).length > 0 && (
-                  <div>
-                    <h6 className="text-warning mb-3 fw-bold">
-                      <span className="badge bg-warning text-dark me-2">Premium</span>
-                      Ingredientes Premium
-                    </h6>
-                    <div 
-                      style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-                        gap: '12px'
-                      }}
-                    >
-                      {availableIngredients
-                        .filter(ing => ing.category === 'premium' && ing.is_available)
-                        .map((ingredient) => {
-                          const isSelected = addedIngredients.some(ing => ing.id === ingredient.id);
-                          return (
-                            <div
-                              key={ingredient.id}
-                              onClick={() => toggleIngredient(ingredient)}
-                              style={{
-                                padding: '12px 16px',
-                                borderRadius: '8px',
-                                border: `2px solid ${isSelected ? '#ffc107' : '#dee2e6'}`,
-                                background: isSelected ? '#fffbf0' : '#fff',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between'
-                              }}
-                              onMouseEnter={(e) => {
-                                if (!isSelected) {
-                                  e.currentTarget.style.borderColor = '#ffc107';
-                                  e.currentTarget.style.background = '#fffbf0';
-                                }
-                              }}
-                              onMouseLeave={(e) => {
-                                if (!isSelected) {
-                                  e.currentTarget.style.borderColor = '#dee2e6';
-                                  e.currentTarget.style.background = '#fff';
-                                }
-                              }}
-                            >
-                              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  )}
+                  {availableIngredients.filter(ing => ing.category === 'premium' && ing.is_available).length > 0 && (
+                    <div>
+                      <h6 className="mb-2 fw-semibold" style={{ color: '#424242', fontSize: '0.9rem' }}>
+                        Premium
+                      </h6>
+                      <div className="d-flex flex-wrap gap-2">
+                        {availableIngredients
+                          .filter(ing => ing.category === 'premium' && ing.is_available)
+                          .map((ingredient) => {
+                            const isSelected = addedIngredients.some(ing => ing.id === ingredient.id);
+                            return (
+                              <label
+                                key={ingredient.id}
+                                className="ingredient-chip mb-0 rounded-3 border d-flex align-items-center gap-2 px-3 py-2"
+                                style={{
+                                  cursor: 'pointer',
+                                  borderWidth: '2px',
+                                  borderColor: isSelected ? '#FFD54F' : '#e0e0e0',
+                                  background: isSelected ? 'rgba(255,213,79,0.12)' : '#fff',
+                                  transition: 'all 0.2s ease',
+                                }}
+                              >
                                 <input
                                   type="checkbox"
                                   checked={isSelected}
-                                  onChange={() => {}}
+                                  onChange={() => toggleIngredient(ingredient)}
+                                  className="d-none"
+                                />
+                                <span
+                                  className="rounded-circle d-inline-block"
                                   style={{
                                     width: '18px',
                                     height: '18px',
-                                    cursor: 'pointer',
-                                    accentColor: '#ffc107'
+                                    border: '2px solid ' + (isSelected ? '#FFD54F' : '#bdbdbd'),
+                                    background: isSelected ? '#FFD54F' : 'transparent',
+                                    transition: 'all 0.2s ease',
                                   }}
                                 />
-                                <span style={{ fontSize: '14px', fontWeight: '500', color: '#000' }}>
+                                <span style={{ fontSize: '0.9rem', fontWeight: '500', color: '#1a1a1a' }}>
                                   {ingredient.name}
                                 </span>
-                              </div>
-                              <span style={{ fontSize: '14px', fontWeight: '600', color: '#ffc107' }}>
-                                +${(Number(ingredient.price) || 0).toLocaleString()}
-                              </span>
-                            </div>
-                          );
-                        })}
+                                <span className="fw-semibold small" style={{ color: '#E65100' }}>
+                                  +${(Number(ingredient.price) || 0).toLocaleString('es-CL')}
+                                </span>
+                              </label>
+                            );
+                          })}
+                      </div>
                     </div>
-                  </div>
-                )}
-
-                {availableIngredients.filter(ing => ing.is_available).length === 0 && (
-                  <div className="text-center py-3 text-muted">
-                    No hay ingredientes disponibles
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+                  )}
+                  {availableIngredients.filter(ing => ing.is_available).length === 0 && (
+                    <p className="text-muted small mb-0">No hay ingredientes disponibles</p>
+                  )}
+                </>
+              )}
+            </div>
+            <div className="section-divider" />
+          </>
         )}
 
-        {/* Instrucciones Especiales - Solo mostrar si NO es bebestible */}
-        {!isBeverage() && (
+        {/* Instrucciones especiales */}
+        {!isBev && (
           <div className="mb-4">
-            <Form.Label className="fw-bold mb-3" style={{ fontSize: '16px', color: '#000' }}>
-              Instrucciones Especiales
+            <Form.Label className="fw-semibold mb-2" style={{ color: '#1a1a1a', fontSize: '1rem' }}>
+              Instrucciones especiales
             </Form.Label>
             <Form.Control
               as="textarea"
@@ -461,83 +405,57 @@ const ProductModal: React.FC<ProductModalProps> = ({ show, onHide, product, onAd
               value={specialInstructions}
               onChange={(e) => setSpecialInstructions(e.target.value)}
               placeholder="Ej: Sin cebolla, bien cocida..."
+              className="rounded-3 border"
               style={{
-                borderRadius: '8px',
-                border: '1px solid #dee2e6',
+                borderColor: '#e0e0e0',
                 padding: '12px',
-                fontSize: '14px',
-                resize: 'vertical'
+                fontSize: '0.95rem',
+                resize: 'vertical',
+                transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
               }}
             />
           </div>
         )}
 
-        {/* Total */}
-        <div 
-          style={{
-            paddingTop: '20px',
-            borderTop: '1px solid #e9ecef',
-            marginTop: '20px'
-          }}
+        {/* Total y botones */}
+        <div
+          className="pt-3 mt-3"
+          style={{ borderTop: '1px solid #eee' }}
         >
           <div className="d-flex justify-content-between align-items-center mb-4">
-            <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#000' }}>Total:</span>
-            <span style={{ fontSize: '24px', fontWeight: 'bold', color: '#0B6E4F' }}>
-              ${calculateTotal().toLocaleString()}
+            <span className="fw-bold" style={{ fontSize: '1.1rem', color: '#1a1a1a' }}>Total</span>
+            <span className="fw-bold fs-4" style={{ color: '#00C853' }}>
+              ${calculateTotal().toLocaleString('es-CL')}
             </span>
           </div>
-
-          {/* Botones */}
           <div className="d-flex gap-3">
             <Button
               variant="outline-secondary"
               onClick={handleClose}
-              style={{
-                flex: 1,
-                padding: '12px',
-                borderRadius: '8px',
-                border: '1px solid #dee2e6',
-                fontWeight: '600',
-                fontSize: '16px',
-                transition: 'all 0.2s'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#f8f9fa';
-                e.currentTarget.style.borderColor = '#adb5bd';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#fff';
-                e.currentTarget.style.borderColor = '#dee2e6';
-              }}
+              className="rounded-3 flex-grow-1 py-2 fw-semibold border"
+              style={{ borderColor: '#e0e0e0', color: '#424242', transition: 'all 0.2s ease' }}
             >
               Cancelar
             </Button>
             <Button
               onClick={handleAddToCart}
+              className="btn-add-cart-pulse rounded-3 flex-grow-1 py-2 fw-semibold border-0 d-flex align-items-center justify-content-center gap-2"
               style={{
-                flex: 1,
-                padding: '12px',
-                borderRadius: '8px',
-                background: '#0B6E4F',
-                border: 'none',
-                color: 'white',
-                fontWeight: '600',
-                fontSize: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                transition: 'all 0.2s'
+                background: 'linear-gradient(135deg, #00C853 0%, #00A843 100%)',
+                color: '#1a1a1a',
+                fontSize: '1rem',
+                transition: 'all 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#095a41';
+                e.currentTarget.style.transform = 'scale(1.02)';
+                e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,200,83,0.5)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#0B6E4F';
+                e.currentTarget.style.transform = 'scale(1)';
               }}
             >
               <ShoppingCart size={18} />
-              Agregar al Carrito
+              Agregar al carrito
             </Button>
           </div>
         </div>

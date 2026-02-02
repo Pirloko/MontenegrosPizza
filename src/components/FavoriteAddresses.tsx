@@ -157,8 +157,8 @@ export default function FavoriteAddresses() {
     return (
       <Container className="py-5">
         <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-3">Cargando direcciones...</p>
+          <Spinner animation="border" style={{ color: '#00C853' }} />
+          <p className="mt-3 text-brand-gray-muted">Cargando direcciones...</p>
         </div>
       </Container>
     );
@@ -166,14 +166,14 @@ export default function FavoriteAddresses() {
 
   return (
     <Container className="py-4">
-      <Card className="shadow-sm">
-        <Card.Header className="bg-white border-bottom">
+      <Card className="panel-card">
+        <Card.Header className="bg-white">
           <div className="d-flex align-items-center justify-content-between">
-            <h5 className="mb-0 d-flex align-items-center">
-              <MapPin size={20} className="me-2" />
+            <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+              <MapPin size={20} className="me-2" style={{ color: '#00C853' }} />
               Mis Direcciones Favoritas
             </h5>
-            <Button variant="primary" size="sm" onClick={() => handleShowModal()}>
+            <Button size="sm" className="rounded-3 panel-btn-primary" onClick={() => handleShowModal()}>
               <Plus size={16} className="me-1" />
               Agregar Dirección
             </Button>
@@ -187,13 +187,13 @@ export default function FavoriteAddresses() {
           )}
 
           {addresses.length === 0 ? (
-            <div className="text-center py-5">
-              <MapPin size={64} className="text-muted mb-3" />
-              <h6 className="text-muted">No tienes direcciones guardadas</h6>
-              <p className="text-muted small">
-                Agrega direcciones favoritas para facilitar tus pedidos con delivery.
-              </p>
-              <Button variant="primary" onClick={() => handleShowModal()}>
+            <div className="panel-empty-state">
+              <div className="display-icon">
+                <MapPin size={40} />
+              </div>
+              <h6 className="fw-semibold mb-2">No tienes direcciones guardadas</h6>
+              <p className="small mb-4">Agrega direcciones favoritas para facilitar tus pedidos con delivery.</p>
+              <Button className="rounded-3 panel-btn-primary px-4" onClick={() => handleShowModal()}>
                 <Plus size={16} className="me-1" />
                 Agregar Primera Dirección
               </Button>
@@ -205,14 +205,14 @@ export default function FavoriteAddresses() {
                   <Row className="align-items-center">
                     <Col md={8}>
                       <div className="d-flex align-items-start mb-2">
-                        <div className="text-primary me-3 mt-1">
+                        <div className="me-3 mt-1" style={{ color: '#00C853' }}>
                           {getAddressIcon(address.name)}
                         </div>
                         <div>
                           <div className="d-flex align-items-center mb-1">
                             <h6 className="mb-0 me-2">{address.name}</h6>
                             {address.is_default && (
-                              <Badge bg="warning" className="d-flex align-items-center gap-1">
+                              <Badge className="d-inline-flex align-items-center gap-1" style={{ background: 'linear-gradient(135deg, #FFD54F 0%, #FFC107 100%)', color: '#1a1a1a', padding: '4px 10px', borderRadius: '8px' }}>
                                 <Star size={12} />
                                 Predeterminada
                               </Badge>
@@ -230,28 +230,16 @@ export default function FavoriteAddresses() {
                     <Col md={4} className="text-md-end mt-3 mt-md-0">
                       <div className="d-flex gap-2 justify-content-md-end">
                         {!address.is_default && (
-                          <Button
-                            variant="outline-warning"
-                            size="sm"
-                            onClick={() => handleSetDefault(address.id)}
-                          >
+                          <Button variant="outline-secondary" size="sm" className="rounded-3" onClick={() => handleSetDefault(address.id)}>
                             <Star size={14} className="me-1" />
                             Predeterminada
                           </Button>
                         )}
-                        <Button
-                          variant="outline-primary"
-                          size="sm"
-                          onClick={() => handleShowModal(address)}
-                        >
+                        <Button variant="outline-secondary" size="sm" className="rounded-3" onClick={() => handleShowModal(address)}>
                           <Edit size={14} className="me-1" />
                           Editar
                         </Button>
-                        <Button
-                          variant="outline-danger"
-                          size="sm"
-                          onClick={() => handleDelete(address.id)}
-                        >
+                        <Button variant="outline-danger" size="sm" className="rounded-3" onClick={() => handleDelete(address.id)}>
                           <Trash2 size={14} className="me-1" />
                           Eliminar
                         </Button>
@@ -266,14 +254,14 @@ export default function FavoriteAddresses() {
       </Card>
 
       {/* Modal para agregar/editar dirección */}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>
+      <Modal show={showModal} onHide={handleCloseModal} centered contentClassName="border-0 rounded-3 overflow-hidden">
+        <Modal.Header closeButton className="text-white border-0" style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #00A843 100%)' }}>
+          <Modal.Title className="fw-bold">
             {editingAddress ? 'Editar Dirección' : 'Agregar Nueva Dirección'}
           </Modal.Title>
         </Modal.Header>
         <Form onSubmit={handleSubmit}>
-          <Modal.Body>
+          <Modal.Body className="p-4">
             <Form.Group className="mb-3">
               <Form.Label>Nombre de la Dirección *</Form.Label>
               <Form.Control
@@ -315,11 +303,11 @@ export default function FavoriteAddresses() {
               onChange={(e) => setFormData({ ...formData, is_default: e.target.checked })}
             />
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="outline-secondary" onClick={handleCloseModal}>
+          <Modal.Footer className="border-top">
+            <Button variant="outline-secondary" className="rounded-3" onClick={handleCloseModal}>
               Cancelar
             </Button>
-            <Button variant="primary" type="submit">
+            <Button type="submit" className="rounded-3 panel-btn-primary">
               {editingAddress ? 'Actualizar' : 'Guardar'}
             </Button>
           </Modal.Footer>

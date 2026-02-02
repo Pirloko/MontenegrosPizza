@@ -277,21 +277,21 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
   if (loading) {
     return (
       <div className="text-center py-5">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-3">Cargando productos...</p>
+        <Spinner animation="border" style={{ color: 'var(--brand-green)' }} />
+        <p className="mt-3 text-brand-gray-muted">Cargando productos...</p>
       </div>
     );
   }
 
   return (
     <Container fluid>
-      <Row>
+      <Row className="g-4">
         <Col lg={8}>
           {/* Búsqueda de Productos */}
-          <Card className="mb-4">
-            <Card.Header>
-              <h5 className="mb-0 d-flex align-items-center">
-                <ShoppingCart className="me-2" />
+          <Card className="mb-4 panel-card">
+            <Card.Header className="border-bottom py-3 bg-white" style={{ borderRadius: '1rem 1rem 0 0' }}>
+              <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: 'var(--brand-black)', fontFamily: 'var(--font-display)' }}>
+                <ShoppingCart className="me-2" style={{ color: 'var(--brand-green)' }} />
                 Registrar Pedido Presencial
               </h5>
             </Card.Header>
@@ -303,17 +303,13 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
                     {categories.map((category) => (
                       <Col xs={6} sm={4} md={3} lg={2} key={category.id}>
                         <Button
-                          variant={selectedCategory === category.id ? 'primary' : 'outline-primary'}
-                          className="w-100"
+                          variant={selectedCategory === category.id ? 'primary' : 'outline-secondary'}
+                          className={`w-100 rounded-3 ${selectedCategory === category.id ? 'panel-btn-primary border-0' : ''}`}
                           onClick={() => {
                             setSelectedCategory(category.id);
-                            setSearchTerm(''); // Limpiar búsqueda al cambiar categoría
+                            setSearchTerm('');
                           }}
-                          style={{
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                          }}
+                          style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
                         >
                           {category.name}
                         </Button>
@@ -323,26 +319,25 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
                 </div>
               )}
 
-              {/* Búsqueda */}
               <InputGroup className="mb-4">
-                <InputGroup.Text>
-                  <Search size={18} />
+                <InputGroup.Text className="rounded-start-3 bg-light border">
+                  <Search size={18} style={{ color: 'var(--brand-green)' }} />
                 </InputGroup.Text>
                 <Form.Control
                   type="text"
                   placeholder="Buscar productos..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  className="rounded-end-3 border"
                 />
               </InputGroup>
 
               {/* Grid de Productos con Fotos */}
               {filteredProducts.length === 0 ? (
-                <div className="text-center py-5">
-                  <p className="text-muted">
-                    {searchTerm 
-                      ? 'No se encontraron productos con ese nombre'
-                      : 'No hay productos en esta categoría'}
+                <div className="panel-empty-state">
+                  <div className="display-icon"><ShoppingCart size={48} /></div>
+                  <p className="mb-0">
+                    {searchTerm ? 'No se encontraron productos con ese nombre' : 'No hay productos en esta categoría'}
                   </p>
                 </div>
               ) : (
@@ -350,28 +345,20 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
                   {filteredProducts.map((product) => (
                     <Col md={6} lg={4} key={product.id} className="mb-4">
                       <Card 
-                        className="h-100 shadow-sm"
-                        style={{
-                          transition: 'all 0.3s ease',
-                          cursor: 'pointer'
-                        }}
+                        className="h-100 panel-card overflow-hidden"
+                        style={{ transition: 'all 0.3s ease', cursor: 'pointer' }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.transform = 'translateY(-4px)';
-                          e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                          e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.1)';
                         }}
                         onMouseLeave={(e) => {
                           e.currentTarget.style.transform = 'translateY(0)';
-                          e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
+                          e.currentTarget.style.boxShadow = '';
                         }}
                       >
-                        {/* Imagen del Producto */}
                         <div 
-                          style={{ 
-                            width: '100%', 
-                            height: '200px', 
-                            overflow: 'hidden',
-                            backgroundColor: '#f8f9fa'
-                          }}
+                          className="overflow-hidden"
+                          style={{ width: '100%', height: '200px', backgroundColor: 'var(--gray-light)' }}
                         >
                           <img
                             src={product.image_url || '/images/logo.jpeg'}
@@ -391,12 +378,12 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
                             {product.description}
                           </p>
                           <div className="d-flex justify-content-between align-items-center mt-auto">
-                            <span className="fw-bold text-success fs-5">
+                            <span className="fw-bold fs-5" style={{ color: 'var(--brand-green)' }}>
                               ${product.price.toLocaleString()}
                             </span>
                             <Button
-                              variant="primary"
                               size="sm"
+                              className="rounded-3 panel-btn-primary border-0"
                               onClick={() => {
                                 const productCategory = categories.find(cat => cat.id === product.category_id);
                                 const isBeverageProduct = productCategory?.name?.toUpperCase().includes('BEBESTIBLES') || false;
@@ -428,18 +415,22 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
         </Col>
 
         <Col lg={4}>
-          {/* Carrito */}
-          <Card className="mb-4">
-            <Card.Header>
-              <h5 className="mb-0">Carrito ({cartItems.length})</h5>
+          <Card className="mb-4 panel-card">
+            <Card.Header className="border-bottom py-3 bg-white" style={{ borderRadius: '1rem 1rem 0 0' }}>
+              <h5 className="mb-0 fw-bold" style={{ color: 'var(--brand-black)', fontFamily: 'var(--font-display)' }}>
+                Carrito ({cartItems.length})
+              </h5>
             </Card.Header>
             <Card.Body>
               {cartItems.length === 0 ? (
-                <p className="text-muted text-center">No hay productos en el carrito</p>
+                <div className="panel-empty-state">
+                  <div className="display-icon"><ShoppingCart size={40} /></div>
+                  <p className="mb-0">No hay productos en el carrito</p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {cartItems.map((item, index) => (
-                    <div key={index} className="border rounded p-2 mb-2">
+                    <div key={index} className="border rounded-3 p-3 mb-2" style={{ backgroundColor: 'var(--gray-light)' }}>
                       <div className="d-flex justify-content-between align-items-start">
                         <div className="flex-grow-1">
                           <h6 className="mb-1">{item.product.name}</h6>
@@ -463,23 +454,15 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
                         </div>
                         <div className="text-end">
                           <div className="d-flex align-items-center gap-2 mb-1">
-                            <Button
-                              variant="outline-secondary"
-                              size="sm"
-                              onClick={() => updateCartItemQuantity(index, item.quantity - 1)}
-                            >
+                            <Button variant="outline-secondary" size="sm" className="rounded-3" onClick={() => updateCartItemQuantity(index, item.quantity - 1)}>
                               <Minus size={12} />
                             </Button>
                             <span className="fw-bold">{item.quantity}</span>
-                            <Button
-                              variant="outline-secondary"
-                              size="sm"
-                              onClick={() => updateCartItemQuantity(index, item.quantity + 1)}
-                            >
+                            <Button variant="outline-secondary" size="sm" className="rounded-3" onClick={() => updateCartItemQuantity(index, item.quantity + 1)}>
                               <Plus size={12} />
                             </Button>
                           </div>
-                          <small className="fw-bold text-success">
+                          <small className="fw-bold" style={{ color: 'var(--brand-green)' }}>
                             ${calculateItemTotal(item).toLocaleString()}
                           </small>
                         </div>
@@ -492,57 +475,60 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
               {cartItems.length > 0 && (
                 <div className="border-top pt-3 mt-3">
                   <div className="d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">Total:</h5>
-                    <h5 className="mb-0 text-success">${calculateTotal().toLocaleString()}</h5>
+                    <h5 className="mb-0 fw-bold">Total:</h5>
+                    <h5 className="mb-0 fw-bold" style={{ color: 'var(--brand-green)' }}>${calculateTotal().toLocaleString()}</h5>
                   </div>
                 </div>
               )}
             </Card.Body>
           </Card>
 
-          {/* Formulario de Cliente */}
-          <Card>
-            <Card.Header>
-              <h5 className="mb-0 d-flex align-items-center">
-                <User className="me-2" />
+          <Card className="panel-card">
+            <Card.Header className="border-bottom py-3 bg-white" style={{ borderRadius: '1rem 1rem 0 0' }}>
+              <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: 'var(--brand-black)', fontFamily: 'var(--font-display)' }}>
+                <User className="me-2" style={{ color: 'var(--brand-green)' }} />
                 Información del Cliente
               </h5>
             </Card.Header>
             <Card.Body>
               <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
-                  <Form.Label>Nombre del Cliente *</Form.Label>
+                  <Form.Label className="fw-bold">Nombre del Cliente *</Form.Label>
                   <Form.Control
                     type="text"
                     value={customerForm.name}
                     onChange={(e) => setCustomerForm({...customerForm, name: e.target.value})}
                     required
+                    className="rounded-3"
                   />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
-                  <Form.Label>Teléfono *</Form.Label>
+                  <Form.Label className="fw-bold">Teléfono *</Form.Label>
                   <Form.Control
                     type="tel"
                     value={customerForm.phone}
                     onChange={(e) => setCustomerForm({...customerForm, phone: e.target.value})}
                     placeholder="+56 9 XXXX XXXX"
                     required
+                    className="rounded-3"
                   />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
-                  <Form.Label>Email (opcional)</Form.Label>
+                  <Form.Label className="fw-bold">Email (opcional)</Form.Label>
                   <Form.Control
                     type="email"
                     value={customerForm.email}
                     onChange={(e) => setCustomerForm({...customerForm, email: e.target.value})}
+                    className="rounded-3"
                   />
                 </Form.Group>
 
                 <Form.Group className="mb-3">
-                  <Form.Label>Tipo de Entrega</Form.Label>
+                  <Form.Label className="fw-bold">Tipo de Entrega</Form.Label>
                   <Form.Select
+                    className="rounded-3"
                     value={customerForm.deliveryType}
                     onChange={(e) => {
                       const newType = e.target.value as 'delivery' | 'pickup';
@@ -602,24 +588,25 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
                 )}
 
                 <Form.Group className="mb-3">
-                  <Form.Label>Notas Adicionales</Form.Label>
+                  <Form.Label className="fw-bold">Notas Adicionales</Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={3}
                     value={customerForm.notes}
                     onChange={(e) => setCustomerForm({...customerForm, notes: e.target.value})}
                     placeholder="Instrucciones especiales..."
+                    className="rounded-3"
                   />
                 </Form.Group>
 
                 {error && (
-                  <Alert variant="danger" className="mb-3">
+                  <Alert variant="danger" className="mb-3 rounded-3 border-0">
                     {error}
                   </Alert>
                 )}
 
                 {success && (
-                  <Alert variant="success" className="mb-3">
+                  <Alert variant="success" className="mb-3 rounded-3 border-0 d-flex align-items-center">
                     <CheckCircle className="me-2" />
                     ¡Pedido registrado exitosamente!
                   </Alert>
@@ -627,8 +614,7 @@ export default function EmployeeOrderForm({ onOrderCreated }: EmployeeOrderFormP
 
                 <Button
                   type="submit"
-                  variant="success"
-                  className="w-100"
+                  className="w-100 rounded-3 panel-btn-primary border-0"
                   disabled={submitting || cartItems.length === 0}
                 >
                   {submitting ? (

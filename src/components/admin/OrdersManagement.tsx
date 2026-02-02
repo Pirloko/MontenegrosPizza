@@ -11,13 +11,13 @@ type Order = Database['public']['Tables']['orders']['Row'];
 type OrderItem = Database['public']['Tables']['order_items']['Row'];
 type User = Database['public']['Tables']['users']['Row'];
 
-const ORDER_STATUSES = {
-  received: { label: 'Recibido', color: 'warning', icon: Clock },
-  preparing: { label: 'Preparando', color: 'info', icon: Package },
-  ready: { label: 'Listo', color: 'primary', icon: CheckCircle },
-  on_the_way: { label: 'En Camino', color: 'secondary', icon: Truck },
-  delivered: { label: 'Entregado', color: 'success', icon: CheckCircle },
-  cancelled: { label: 'Cancelado', color: 'danger', icon: X }
+const ORDER_STATUSES: Record<string, { label: string; color: string; icon: typeof Clock; badgeClass: string }> = {
+  received: { label: 'Recibido', color: 'warning', icon: Clock, badgeClass: 'order-badge-received' },
+  preparing: { label: 'Preparando', color: 'info', icon: Package, badgeClass: 'order-badge-preparing' },
+  ready: { label: 'Listo', color: 'primary', icon: CheckCircle, badgeClass: 'order-badge-ready' },
+  on_the_way: { label: 'En Camino', color: 'secondary', icon: Truck, badgeClass: 'order-badge-on_the_way' },
+  delivered: { label: 'Entregado', color: 'success', icon: CheckCircle, badgeClass: 'order-badge-delivered' },
+  cancelled: { label: 'Cancelado', color: 'danger', icon: X, badgeClass: 'order-badge-cancelled' }
 };
 
 export default function OrdersManagement() {
@@ -102,12 +102,11 @@ export default function OrdersManagement() {
   };
 
   const getStatusBadge = (status: string) => {
-    const statusConfig = ORDER_STATUSES[status as keyof typeof ORDER_STATUSES];
+    const statusConfig = ORDER_STATUSES[status];
     if (!statusConfig) return <Badge bg="secondary">{status}</Badge>;
-    
     const IconComponent = statusConfig.icon;
     return (
-      <Badge bg={statusConfig.color} className="d-flex align-items-center gap-1">
+      <Badge className={`d-inline-flex align-items-center gap-1 ${statusConfig.badgeClass}`} style={{ padding: '6px 12px', borderRadius: '8px', border: 'none' }}>
         <IconComponent size={12} />
         {statusConfig.label}
       </Badge>
@@ -157,15 +156,16 @@ export default function OrdersManagement() {
         </Alert>
       )}
 
-      {/* Filtros de Estado */}
+      {/* Filtros de estado: diseño compacto */}
       <Row className="mb-4">
         <Col>
-          <Card>
-            <Card.Body>
-              <div className="d-flex flex-wrap gap-2">
+          <Card style={{ border: 'none', borderRadius: '1rem' }}>
+            <Card.Body className="py-3">
+              <div className="d-flex flex-wrap gap-2 align-items-center">
                 <Button
-                  variant={selectedStatus === 'all' ? 'primary' : 'outline-primary'}
+                  variant={selectedStatus === 'all' ? 'dark' : 'outline-dark'}
                   size="sm"
+                  className="rounded-pill"
                   onClick={() => setSelectedStatus('all')}
                 >
                   Todos ({orders.length})
@@ -175,8 +175,10 @@ export default function OrdersManagement() {
                   return (
                     <Button
                       key={status}
-                      variant={selectedStatus === status ? 'primary' : 'outline-primary'}
+                      variant={selectedStatus === status ? 'success' : 'outline-secondary'}
                       size="sm"
+                      className="rounded-pill"
+                      style={selectedStatus === status ? { backgroundColor: '#00C853', borderColor: '#00C853' } : {}}
                       onClick={() => setSelectedStatus(status)}
                     >
                       {config.label} ({count})
@@ -189,13 +191,13 @@ export default function OrdersManagement() {
         </Col>
       </Row>
 
-      {/* Lista de Pedidos */}
+      {/* Lista de pedidos: tabla con hover suave */}
       <Row>
         <Col>
-          <Card>
-            <Card.Body>
+          <Card style={{ border: 'none', borderRadius: '1rem' }}>
+            <Card.Body className="p-0">
               <div className="table-responsive">
-                <Table hover>
+                <Table hover className="admin-table-modern mb-0">
                   <thead>
                     <tr>
                       <th>Pedido</th>
@@ -424,10 +426,10 @@ function OrderDetailModal({ order, onClose }: { order: Order; onClose: () => voi
   };
 
   const getStatusBadge = (status: string) => {
-    const statusInfo = ORDER_STATUSES[status as keyof typeof ORDER_STATUSES] || ORDER_STATUSES.received;
+    const statusInfo = ORDER_STATUSES[status] || ORDER_STATUSES.received;
     const IconComponent = statusInfo.icon;
     return (
-      <Badge bg={statusInfo.color} className="d-flex align-items-center gap-1" style={{ fontSize: '14px', padding: '6px 12px' }}>
+      <Badge className={`d-inline-flex align-items-center gap-1 ${statusInfo.badgeClass}`} style={{ fontSize: '14px', padding: '6px 12px', borderRadius: '8px' }}>
         <IconComponent size={14} />
         {statusInfo.label}
       </Badge>
@@ -446,8 +448,8 @@ function OrderDetailModal({ order, onClose }: { order: Order; onClose: () => voi
   return (
     <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 1050 }}>
       <div className="modal-dialog modal-lg modal-dialog-centered">
-        <div className="modal-content shadow-lg" style={{ borderRadius: '8px', overflow: 'hidden' }}>
-          <div className="modal-header bg-danger text-white">
+          <div className="modal-content shadow-lg" style={{ borderRadius: '1rem', overflow: 'hidden' }}>
+          <div className="modal-header text-white" style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #E53935 100%)' }}>
             <h5 className="modal-title fw-bold d-flex align-items-center gap-2">
               <Package size={20} />
               Detalle del Pedido #{order.order_number}
@@ -462,6 +464,40 @@ function OrderDetailModal({ order, onClose }: { order: Order; onClose: () => voi
               </div>
             ) : (
               <>
+                {/* Timeline visual del progreso del pedido */}
+                {order.status !== 'cancelled' && (
+                  <div className="mb-4 pb-3 border-bottom" style={{ borderColor: 'rgba(255,255,255,0.1) !important' }}>
+                    <small className="text-muted d-block mb-2">Progreso del pedido</small>
+                    <div className="d-flex align-items-center justify-content-between gap-1">
+                      {['received', 'preparing', 'ready', 'on_the_way', 'delivered'].map((st, i) => {
+                        const orderIdx = ['received', 'preparing', 'ready', 'on_the_way', 'delivered'].indexOf(order.status);
+                        const isActive = i <= orderIdx;
+                        const labels: Record<string, string> = { received: 'Recibido', preparing: 'Preparando', ready: 'Listo', on_the_way: 'En camino', delivered: 'Entregado' };
+                        return (
+                          <React.Fragment key={st}>
+                            <div className="d-flex flex-column align-items-center" style={{ flex: 1 }}>
+                              <div
+                                className="rounded-circle d-flex align-items-center justify-content-center"
+                                style={{
+                                  width: '28px',
+                                  height: '28px',
+                                  fontSize: '10px',
+                                  fontWeight: 700,
+                                  backgroundColor: isActive ? '#00C853' : 'rgba(255,255,255,0.1)',
+                                  color: isActive ? '#1a1a1a' : '#666',
+                                }}
+                              >
+                                {i + 1}
+                              </div>
+                              <small className="mt-1 text-muted" style={{ fontSize: '0.7rem' }}>{labels[st]}</small>
+                            </div>
+                            {i < 4 && <div style={{ flex: 1, height: '2px', backgroundColor: isActive && i < orderIdx ? '#00C853' : 'rgba(255,255,255,0.1)' }} />}
+                          </React.Fragment>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
                 <Row>
                   {/* Información del Cliente */}
                   <Col md={6}>

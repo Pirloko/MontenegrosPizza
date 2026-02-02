@@ -65,8 +65,8 @@ export default function CustomerPoints() {
     return (
       <Container className="py-5">
         <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-3">Cargando puntos...</p>
+          <Spinner animation="border" style={{ color: '#00C853' }} />
+          <p className="mt-3 text-brand-gray-muted">Cargando puntos...</p>
         </div>
       </Container>
     );
@@ -81,48 +81,47 @@ export default function CustomerPoints() {
       <Row className="g-4">
         {/* Resumen de Puntos */}
         <Col lg={4}>
-          <Card className="shadow-sm h-100">
+          <Card className="panel-card h-100">
             <Card.Body className="p-4 text-center">
-              <div className="bg-warning text-dark rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
-                   style={{ width: '100px', height: '100px' }}>
+              <div
+                className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                style={{ width: '100px', height: '100px', background: 'linear-gradient(135deg, rgba(255,213,79,0.35) 0%, rgba(255,248,225,0.6) 100%)', color: '#E65100' }}
+              >
                 <Award size={40} />
               </div>
-              <h2 className="mb-1">{currentPoints}</h2>
-              <p className="text-muted mb-4">Puntos de Lealtad</p>
+              <h2 className="mb-1 fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>{currentPoints}</h2>
+              <p className="text-brand-gray-muted mb-4">Puntos de Lealtad</p>
 
               {/* Progreso hacia el siguiente premio */}
               <div className="mb-4">
-                <h6 className="mb-2">Siguiente Premio</h6>
+                <h6 className="mb-2 fw-semibold" style={{ color: '#1a1a1a' }}>Siguiente Premio</h6>
                 <div className="mb-2">
-                  <small className="text-muted">{nextReward.reward}</small>
-                  <p className="mb-1 fw-bold">{nextReward.points} puntos</p>
+                  <small className="text-brand-gray-muted">{nextReward.reward}</small>
+                  <p className="mb-1 fw-bold" style={{ color: '#00C853' }}>{nextReward.points} puntos</p>
                 </div>
-                <ProgressBar 
-                  now={progress} 
-                  variant="warning" 
-                  className="mb-2"
-                  style={{ height: '8px' }}
-                />
+                <div className="progress mb-2 rounded-pill" style={{ height: '10px', backgroundColor: '#F5F5F5' }}>
+                  <div className="progress-bar rounded-pill" role="progressbar" style={{ width: `${progress}%`, backgroundColor: '#00C853' }} aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} />
+                </div>
                 <small className="text-muted">
                   {nextReward.points - currentPoints} puntos más para el siguiente premio
                 </small>
               </div>
 
               {/* Información de beneficios */}
-              <div className="border-top pt-3">
-                <h6 className="mb-3">Beneficios</h6>
+              <div className="border-top pt-3" style={{ borderColor: '#eee !important' }}>
+                <h6 className="mb-3 fw-semibold" style={{ color: '#1a1a1a' }}>Beneficios</h6>
                 <div className="text-start">
                   <div className="d-flex align-items-center mb-2">
-                    <Gift size={16} className="text-success me-2" />
-                    <small>Descuentos exclusivos</small>
+                    <Gift size={16} className="me-2" style={{ color: '#00C853' }} />
+                    <small className="text-brand-gray-muted">Descuentos exclusivos</small>
                   </div>
                   <div className="d-flex align-items-center mb-2">
-                    <Star size={16} className="text-warning me-2" />
-                    <small>Productos gratis</small>
+                    <Star size={16} className="me-2" style={{ color: '#FFD54F' }} />
+                    <small className="text-brand-gray-muted">Productos gratis</small>
                   </div>
                   <div className="d-flex align-items-center">
-                    <TrendingUp size={16} className="text-primary me-2" />
-                    <small>Ofertas especiales</small>
+                    <TrendingUp size={16} className="me-2" style={{ color: '#00C853' }} />
+                    <small className="text-brand-gray-muted">Ofertas especiales</small>
                   </div>
                 </div>
               </div>
@@ -132,14 +131,14 @@ export default function CustomerPoints() {
 
         {/* Historial de Puntos */}
         <Col lg={8}>
-          <Card className="shadow-sm">
-            <Card.Header className="bg-white border-bottom">
+          <Card className="panel-card">
+            <Card.Header className="bg-white">
               <div className="d-flex align-items-center justify-content-between">
-                <h5 className="mb-0 d-flex align-items-center">
-                  <History size={20} className="me-2" />
+                <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                  <History size={20} className="me-2" style={{ color: '#00C853' }} />
                   Historial de Puntos
                 </h5>
-                <Button variant="outline-primary" size="sm" onClick={loadLoyaltyHistory}>
+                <Button variant="outline-secondary" size="sm" className="rounded-3" onClick={loadLoyaltyHistory}>
                   Actualizar
                 </Button>
               </div>
@@ -152,12 +151,12 @@ export default function CustomerPoints() {
               )}
 
               {loyaltyHistory.length === 0 ? (
-                <div className="text-center py-5">
-                  <Award size={48} className="text-muted mb-3" />
-                  <h6 className="text-muted">No hay historial de puntos</h6>
-                  <p className="text-muted small">
-                    Cuando hagas pedidos, ganarás puntos que aparecerán aquí.
-                  </p>
+                <div className="panel-empty-state">
+                  <div className="display-icon">
+                    <Award size={40} />
+                  </div>
+                  <h6 className="fw-semibold mb-2">No hay historial de puntos</h6>
+                  <p className="small mb-0">Cuando hagas pedidos, ganarás puntos que aparecerán aquí.</p>
                 </div>
               ) : (
                 <div className="list-group list-group-flush">
@@ -192,38 +191,29 @@ export default function CustomerPoints() {
       {/* Información sobre el programa de lealtad */}
       <Row className="mt-4">
         <Col>
-          <Card className="bg-light">
+          <Card className="panel-card border-0" style={{ backgroundColor: '#F5F5F5' }}>
             <Card.Body className="p-4">
-              <h5 className="mb-3">¿Cómo funciona el programa de lealtad?</h5>
+              <h5 className="mb-4 fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>¿Cómo funciona el programa de lealtad?</h5>
               <Row>
                 <Col md={4}>
                   <div className="text-center">
-                    <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
-                         style={{ width: '50px', height: '50px' }}>
-                      <span className="fw-bold">1</span>
-                    </div>
-                    <h6>Haz Pedidos</h6>
-                    <p className="small text-muted">Gana 5 puntos por cada $1,000 gastados</p>
+                    <div className="rounded-circle d-inline-flex align-items-center justify-content-center mb-2 fw-bold" style={{ width: '50px', height: '50px', background: 'linear-gradient(135deg, #00C853 0%, #00A843 100%)', color: '#1a1a1a' }}>1</div>
+                    <h6 className="fw-semibold mb-1" style={{ color: '#1a1a1a' }}>Haz Pedidos</h6>
+                    <p className="small text-brand-gray-muted mb-0">Gana 5 puntos por cada $1,000 gastados</p>
                   </div>
                 </Col>
                 <Col md={4}>
                   <div className="text-center">
-                    <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
-                         style={{ width: '50px', height: '50px' }}>
-                      <span className="fw-bold">2</span>
-                    </div>
-                    <h6>Acumula Puntos</h6>
-                    <p className="small text-muted">Los puntos se acumulan automáticamente</p>
+                    <div className="rounded-circle d-inline-flex align-items-center justify-content-center mb-2 fw-bold" style={{ width: '50px', height: '50px', background: 'linear-gradient(135deg, #00C853 0%, #00A843 100%)', color: '#1a1a1a' }}>2</div>
+                    <h6 className="fw-semibold mb-1" style={{ color: '#1a1a1a' }}>Acumula Puntos</h6>
+                    <p className="small text-brand-gray-muted mb-0">Los puntos se acumulan automáticamente</p>
                   </div>
                 </Col>
                 <Col md={4}>
                   <div className="text-center">
-                    <div className="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
-                         style={{ width: '50px', height: '50px' }}>
-                      <span className="fw-bold">3</span>
-                    </div>
-                    <h6>Canjea Premios</h6>
-                    <p className="small text-muted">Usa tus puntos para obtener descuentos</p>
+                    <div className="rounded-circle d-inline-flex align-items-center justify-content-center mb-2 fw-bold" style={{ width: '50px', height: '50px', background: 'linear-gradient(135deg, #00C853 0%, #00A843 100%)', color: '#1a1a1a' }}>3</div>
+                    <h6 className="fw-semibold mb-1" style={{ color: '#1a1a1a' }}>Canjea Premios</h6>
+                    <p className="small text-brand-gray-muted mb-0">Usa tus puntos para obtener descuentos</p>
                   </div>
                 </Col>
               </Row>

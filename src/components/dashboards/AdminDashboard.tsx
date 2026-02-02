@@ -48,10 +48,10 @@ export default function AdminDashboard() {
       {/* Top Navigation Bar */}
       <nav className="navbar navbar-dark navbar-expand-lg shadow-sm" style={{ padding: '1rem 0' }}>
         <Container fluid>
-          <span className="navbar-brand fw-bold d-flex align-items-center" style={{ fontSize: '1.25rem' }}>
-            <LayoutDashboard size={28} className="me-2" style={{ color: '#0B6E4F' }} />
-            <span style={{ background: 'linear-gradient(135deg, #0B6E4F 0%, #ffffff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Panel de Administración
+          <span className="navbar-brand fw-bold d-flex align-items-center" style={{ fontSize: '1.2rem' }}>
+            <LayoutDashboard size={26} className="me-2" style={{ color: '#00C853' }} />
+            <span style={{ background: 'linear-gradient(135deg, #00C853 0%, #fff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Panel Admin
             </span>
           </span>
           <div className="d-flex align-items-center gap-3">
@@ -106,10 +106,10 @@ export default function AdminDashboard() {
 
       <Container fluid className="mt-4" style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
         <Row>
-          {/* Sidebar */}
+          {/* Sidebar compacto y elegante */}
           <Col lg={2} className="mb-4">
-            <Card className="admin-sidebar" style={{ border: 'none', borderRadius: '12px' }}>
-              <Card.Body className="p-3">
+            <Card className="admin-sidebar admin-sidebar-v2" style={{ border: 'none' }}>
+              <Card.Body className="p-2">
                 <Nav className="flex-column">
                   <Nav.Link 
                     active={activeTab === 'overview'}
@@ -214,7 +214,7 @@ export default function AdminDashboard() {
 
           {/* Main Content */}
           <Col lg={10}>
-            <Card style={{ border: 'none', borderRadius: '12px', minHeight: 'calc(100vh - 120px)' }}>
+            <Card style={{ border: 'none', borderRadius: '1rem', minHeight: 'calc(100vh - 120px)', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
               <Card.Body className="p-4">
                 {activeTab === 'overview' && <KPIDashboard />}
 

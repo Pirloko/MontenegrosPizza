@@ -38,20 +38,20 @@ export default function EmployeeDashboard() {
   }
 
   return (
-    <div className="min-vh-100 bg-light">
-      {/* Top Navigation Bar */}
-      <nav className="navbar navbar-dark bg-warning navbar-expand-lg shadow-sm">
+    <div className="min-vh-100" style={{ backgroundColor: '#F5F5F5' }}>
+      {/* Top Navigation Bar - mismo diseño que bloques 1-5 */}
+      <nav className="navbar navbar-expand-lg shadow-sm text-white" style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #00A843 100%)' }}>
         <Container fluid>
-          <span className="navbar-brand fw-bold text-dark">
-            <ShoppingBag size={24} className="me-2" />
-            Panel de Empleado
+          <span className="navbar-brand fw-bold d-flex align-items-center" style={{ color: '#fff' }}>
+            <ShoppingBag size={24} className="me-2" style={{ color: '#00C853' }} />
+            Panel Empleado
           </span>
           <div className="d-flex align-items-center gap-3">
-            <span className="text-dark">
+            <span className="d-flex align-items-center gap-2">
               <strong>{user?.full_name}</strong>
-              <span className="badge bg-dark ms-2">Empleado</span>
+              <Badge className="border-0" style={{ background: 'rgba(0,200,83,0.3)', color: '#1a1a1a', padding: '6px 12px', borderRadius: '8px' }}>Empleado</Badge>
             </span>
-            <Button variant="outline-dark" size="sm" onClick={handleLogout}>
+            <Button variant="outline-light" size="sm" className="rounded-3" onClick={handleLogout}>
               <LogOut size={18} className="me-1" />
               Salir
             </Button>
@@ -59,45 +59,34 @@ export default function EmployeeDashboard() {
         </Container>
       </nav>
 
-      <Container fluid className="mt-4">
+      <Container fluid className="mt-4 px-3 px-md-4">
         <Row>
-          {/* Sidebar */}
+          {/* Sidebar - compacto y elegante */}
           <Col lg={2} className="mb-4">
-            <Card className="shadow-sm">
+            <Card className="panel-card border-0">
               <Card.Body className="p-2">
                 <Nav className="flex-column">
-                  <Nav.Link 
-                    active={activeTab === 'orders'}
-                    onClick={() => setActiveTab('orders')}
-                    className="d-flex align-items-center gap-2 py-2"
-                  >
-                    <ShoppingBag size={18} />
-                    Pedidos
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'new-order'}
-                    onClick={() => setActiveTab('new-order')}
-                    className="d-flex align-items-center gap-2 py-2"
-                  >
-                    <Plus size={18} />
-                    Nuevo Pedido
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'history'}
-                    onClick={() => setActiveTab('history')}
-                    className="d-flex align-items-center gap-2 py-2"
-                  >
-                    <History size={18} />
-                    Historial
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'inventory'}
-                    onClick={() => setActiveTab('inventory')}
-                    className="d-flex align-items-center gap-2 py-2"
-                  >
-                    <Package size={18} />
-                    Inventario
-                  </Nav.Link>
+                  {[
+                    { key: 'orders' as TabKey, icon: ShoppingBag, label: 'Pedidos' },
+                    { key: 'new-order' as TabKey, icon: Plus, label: 'Nuevo Pedido' },
+                    { key: 'history' as TabKey, icon: History, label: 'Historial' },
+                    { key: 'inventory' as TabKey, icon: Package, label: 'Inventario' },
+                  ].map(({ key, icon: Icon, label }) => (
+                    <Nav.Link
+                      key={key}
+                      active={activeTab === key}
+                      onClick={() => setActiveTab(key)}
+                      className={`d-flex align-items-center gap-2 py-2 rounded-3 mb-1 ${activeTab === key ? 'panel-nav-active' : ''}`}
+                      style={{
+                        fontWeight: activeTab === key ? 600 : 500,
+                        color: activeTab === key ? '#00C853' : '#424242',
+                        backgroundColor: activeTab === key ? 'rgba(0,200,83,0.1)' : 'transparent',
+                      }}
+                    >
+                      <Icon size={18} />
+                      {label}
+                    </Nav.Link>
+                  ))}
                 </Nav>
               </Card.Body>
             </Card>
@@ -114,12 +103,14 @@ export default function EmployeeDashboard() {
             {activeTab === 'history' && <EmployeeOrderHistory />}
 
             {activeTab === 'inventory' && (
-              <Card className="shadow-sm">
+              <Card className="panel-card">
                 <Card.Body className="p-4">
-                  <h3 className="mb-4">Vista de Inventario</h3>
-                  <div className="p-4 bg-light rounded text-center">
-                    <Package size={48} className="text-muted mb-3" />
-                    <p className="text-muted mb-0">
+                  <h3 className="mb-4 fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>Vista de Inventario</h3>
+                  <div className="panel-empty-state">
+                    <div className="display-icon">
+                      <Package size={48} />
+                    </div>
+                    <p className="mb-0">
                       Aquí podrás ver el inventario de productos disponibles.
                       Esta funcionalidad se implementará en las siguientes fases.
                     </p>

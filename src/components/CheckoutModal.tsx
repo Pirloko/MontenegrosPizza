@@ -318,13 +318,13 @@ export default function CheckoutModal({ show, onHide, cartItems, onOrderSuccess 
       onHide={onHide} 
       size="lg" 
       centered
-      contentClassName="border-0"
-      style={{ borderRadius: '16px', overflow: 'hidden' }}
+      contentClassName="border-0 checkout-modal-modern"
+      style={{ borderRadius: '1.25rem', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}
     >
-      {/* Header con gradiente usando paleta del logo */}
+      {/* Header con gradiente marca */}
       <div
         style={{
-          background: 'linear-gradient(135deg, #000000 0%, #0B6E4F 100%)',
+          background: 'linear-gradient(135deg, #1a1a1a 0%, #00A843 100%)',
           padding: '24px',
           color: 'white',
           position: 'relative'
@@ -836,7 +836,7 @@ export default function CheckoutModal({ show, onHide, cartItems, onOrderSuccess 
               borderRadius: '12px 12px 0 0',
               padding: '16px 20px'
             }}>
-              <h5 className="mb-0" style={{ fontSize: '18px', fontWeight: 'bold', color: '#000' }}>
+              <h5 className="mb-0 checkout-summary-title">
                 Resumen del Pedido
               </h5>
             </Card.Header>
@@ -903,15 +903,15 @@ export default function CheckoutModal({ show, onHide, cartItems, onOrderSuccess 
               <hr />
 
               <div 
-                className="d-flex justify-content-between mb-3"
+                className="d-flex justify-content-between align-items-center mb-3"
                 style={{
                   paddingTop: '16px',
                   borderTop: '2px solid #e9ecef',
                   marginTop: '16px'
                 }}
               >
-                <strong style={{ fontSize: '20px', color: '#000' }}>Total a Pagar:</strong>
-                <strong style={{ fontSize: '24px', color: '#0B6E4F' }}>${total.toLocaleString()}</strong>
+                <strong className="checkout-summary-title">Total a pagar</strong>
+                <strong className="checkout-summary-total">${total.toLocaleString('es-CL')}</strong>
               </div>
 
               {pointsEarned > 0 && (
@@ -964,22 +964,23 @@ export default function CheckoutModal({ show, onHide, cartItems, onOrderSuccess 
             <Button 
               type="submit" 
               disabled={loading}
+              className="rounded-3 fw-semibold border-0"
               style={{ 
-                borderRadius: '8px',
-                backgroundColor: '#0B6E4F', 
-                border: 'none',
-                color: 'white',
-                fontWeight: '600',
+                backgroundColor: '#00C853',
+                color: '#1a1a1a',
                 padding: '12px 24px',
-                transition: 'all 0.2s'
+                transition: 'all 0.2s',
+                boxShadow: '0 4px 14px rgba(0,200,83,0.35)'
               }}
               onMouseEnter={(e) => {
                 if (!e.currentTarget.disabled) {
-                  e.currentTarget.style.backgroundColor = '#095a41';
+                  e.currentTarget.style.backgroundColor = '#00E676';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,200,83,0.45)';
                 }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#0B6E4F';
+                e.currentTarget.style.backgroundColor = '#00C853';
+                e.currentTarget.style.boxShadow = '0 4px 14px rgba(0,200,83,0.35)';
               }}
             >
               {loading ? 'Procesando...' : 'Confirmar Pedido'}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Alert, Spinner, Badge, InputGroup, Image } from 'react-bootstrap';
-import { Plus, Edit2, Trash2, Eye, EyeOff, Upload, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, Eye, EyeOff, Upload, X, Search } from 'lucide-react';
 import { productService } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
 import { ingredientService } from '../../services/ingredientService';
@@ -24,6 +24,7 @@ export default function ProductManagement() {
   const [uploading, setUploading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -260,20 +261,43 @@ export default function ProductManagement() {
     );
   }
 
+  const filteredProducts = searchQuery.trim()
+    ? products.filter(
+        p =>
+          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (p.description || '').toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : products;
+
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <h3 className="mb-0">Gestión de Productos</h3>
-        <Button variant="danger" onClick={() => handleOpenModal()}>
-          <Plus size={18} className="me-2" />
-          Nuevo Producto
-        </Button>
+        <div className="d-flex flex-wrap gap-2 align-items-center">
+          <InputGroup style={{ maxWidth: '280px' }} className="rounded-pill">
+            <InputGroup.Text className="bg-dark border-dark text-white rounded-start-pill">
+              <Search size={18} />
+            </InputGroup.Text>
+            <Form.Control
+              type="search"
+              placeholder="Buscar por nombre o descripción..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="rounded-end-pill border-dark"
+              style={{ borderLeft: 'none' }}
+            />
+          </InputGroup>
+          <Button variant="success" onClick={() => handleOpenModal()} className="rounded-pill px-3" style={{ backgroundColor: '#00C853', borderColor: '#00C853' }}>
+            <Plus size={18} className="me-2" />
+            Nuevo Producto
+          </Button>
+        </div>
       </div>
 
       {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
       {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
 
-      <Table striped bordered hover responsive>
+      <Table bordered hover responsive className="admin-table-modern" style={{ borderRadius: '0.75rem', overflow: 'hidden' }}>
         <thead className="table-dark">
           <tr>
             <th style={{ width: '80px' }}>Imagen</th>
@@ -288,14 +312,14 @@ export default function ProductManagement() {
           </tr>
         </thead>
         <tbody>
-          {products.length === 0 ? (
+          {filteredProducts.length === 0 ? (
             <tr>
-              <td colSpan={9} className="text-center text-muted">
-                No hay productos registrados
+              <td colSpan={9} className="text-center text-muted py-4">
+                {products.length === 0 ? 'No hay productos registrados' : 'No hay resultados para la búsqueda'}
               </td>
             </tr>
           ) : (
-            products.map((product) => {
+            filteredProducts.map((product) => {
               const profit = product.price - product.cost;
               const profitPercent = product.cost > 0 ? ((profit / product.cost) * 100).toFixed(0) : 0;
               const isLowStock = product.stock_quantity <= product.low_stock_alert && product.stock_quantity !== 999;
@@ -392,15 +416,15 @@ export default function ProductManagement() {
         </tbody>
       </Table>
 
-      {/* Modal for Create/Edit */}
-      <Modal show={showModal} onHide={handleCloseModal} size="lg" centered>
-        <Modal.Header closeButton className="bg-danger text-white">
+      {/* Modal Create/Edit: formulario bien espaciado, preview imagen */}
+      <Modal show={showModal} onHide={handleCloseModal} size="lg" centered contentClassName="border-0" style={{ borderRadius: '1rem' }}>
+        <Modal.Header closeButton style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #00A843 100%)', color: '#fff', border: 'none' }}>
           <Modal.Title className="fw-bold">
             {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
           </Modal.Title>
         </Modal.Header>
         <Form onSubmit={handleSubmit}>
-          <Modal.Body style={{ padding: '24px' }}>
+          <Modal.Body className="p-4">
             {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
             {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
 
@@ -487,19 +511,30 @@ export default function ProductManagement() {
               </div>
             </div>
 
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-4">
               <Form.Label className="fw-bold">Imagen del Producto</Form.Label>
               {imagePreview && (
-                <div className="mb-3 position-relative" style={{ width: '200px' }}>
-                  <Image src={imagePreview} thumbnail className="w-100" style={{ borderRadius: '8px' }} />
+                <div className="mb-3 position-relative d-inline-block">
+                  <Image
+                    src={imagePreview}
+                    thumbnail
+                    className="border"
+                    style={{
+                      width: '180px',
+                      height: '180px',
+                      objectFit: 'cover',
+                      borderRadius: '1rem',
+                      borderColor: '#333 !important',
+                    }}
+                  />
                   <Button
                     size="sm"
                     variant="danger"
-                    className="position-absolute top-0 end-0 m-1"
+                    className="position-absolute top-0 end-0 m-2 rounded-circle"
                     onClick={handleRemoveImage}
-                    style={{ borderRadius: '50%', width: '28px', height: '28px', padding: 0 }}
+                    style={{ width: '32px', height: '32px', padding: 0 }}
                   >
-                    <X size={14} />
+                    <X size={16} />
                   </Button>
                 </div>
               )}
@@ -507,10 +542,11 @@ export default function ProductManagement() {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                style={{ fontSize: '15px', padding: '8px' }}
+                className="rounded-3"
+                style={{ maxWidth: '320px' }}
               />
-              <Form.Text className="text-muted small">
-                Formatos: JPG, PNG, WEBP (máx. 5MB)
+              <Form.Text className="text-muted small d-block mt-1">
+                Formatos: JPG, PNG, WEBP (máx. 5MB). Vista previa en tiempo real arriba.
               </Form.Text>
             </Form.Group>
 

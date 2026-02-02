@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Spinner, Alert, Container } from 'react-bootstrap';
+import { Alert, Container } from 'react-bootstrap';
 import ProductList from '../components/ProductList';
 import ProductListBackup from '../components/ProductListBackup';
+import { SkeletonProductGrid } from '../components/Skeleton';
 import { productService } from '../services/productService';
 import { categoryService } from '../services/categoryService';
 import { Database } from '../types/database';
@@ -82,15 +83,15 @@ export default function Home({ category, onAddToCart }: HomeProps) {
     }
   };
 
-  // Si está cargando, mostrar spinner
+  // Si está cargando, mostrar skeletons elegantes (Bloque 5)
   if (loading) {
     return (
-      <Container className="py-5">
-        <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-3">Cargando productos...</p>
-        </div>
-      </Container>
+      <div className="bg-brand-gray-light py-5 py-md-6">
+        <Container className="px-4">
+          <div className="skeleton skeleton-text mb-5" style={{ width: '200px', height: '2.5rem', borderRadius: '0.5rem' }} />
+          <SkeletonProductGrid count={6} />
+        </Container>
+      </div>
     );
   }
 

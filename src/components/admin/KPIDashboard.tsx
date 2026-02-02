@@ -96,43 +96,33 @@ export default function KPIDashboard() {
 
   return (
     <Container fluid>
-      {/* Filtros de Fecha */}
+      {/* Filtros de fecha compactos */}
       <Row className="mb-4">
         <Col>
-          <Card style={{ border: 'none', borderRadius: '12px' }}>
-            <Card.Body style={{ padding: '20px' }}>
-              <Form className="d-flex gap-3 align-items-end">
-                <Form.Group style={{ minWidth: '200px' }}>
-                  <Form.Label style={{ color: '#b0b0b0', fontWeight: 500, marginBottom: '8px' }}>
-                    Fecha Inicio
+          <Card style={{ border: 'none', borderRadius: '1rem' }}>
+            <Card.Body className="py-3">
+              <Form className="d-flex flex-wrap gap-3 align-items-end admin-date-filters">
+                <Form.Group style={{ minWidth: '160px' }} className="mb-0">
+                  <Form.Label className="small mb-1" style={{ color: '#b0b0b0', fontWeight: 500 }}>
+                    Inicio
                   </Form.Label>
                   <Form.Control
                     type="date"
                     value={dateRange.start}
                     onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                    style={{ borderRadius: '8px' }}
                   />
                 </Form.Group>
-                <Form.Group style={{ minWidth: '200px' }}>
-                  <Form.Label style={{ color: '#b0b0b0', fontWeight: 500, marginBottom: '8px' }}>
-                    Fecha Fin
+                <Form.Group style={{ minWidth: '160px' }} className="mb-0">
+                  <Form.Label className="small mb-1" style={{ color: '#b0b0b0', fontWeight: 500 }}>
+                    Fin
                   </Form.Label>
                   <Form.Control
                     type="date"
                     value={dateRange.end}
                     onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                    style={{ borderRadius: '8px' }}
                   />
                 </Form.Group>
-                <Button 
-                  variant="primary" 
-                  onClick={loadMetrics}
-                  style={{ 
-                    borderRadius: '8px',
-                    padding: '8px 24px',
-                    fontWeight: 600
-                  }}
-                >
+                <Button variant="primary" onClick={loadMetrics} className="px-3">
                   Actualizar
                 </Button>
               </Form>
@@ -141,22 +131,22 @@ export default function KPIDashboard() {
         </Col>
       </Row>
 
-      {/* KPIs Principales */}
+      {/* KPIs con iconos más grandes y animación de entrada */}
       <Row className="g-4 mb-4">
         <Col md={3}>
-          <Card className="h-100 kpi-card border-0">
+          <Card className="h-100 kpi-card admin-kpi-card border-0">
             <Card.Body style={{ padding: '24px' }}>
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <div style={{ flex: 1 }}>
-                  <p className="text-muted mb-2" style={{ fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <p className="text-muted mb-2" style={{ fontSize: '0.8rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Ingresos Totales
                   </p>
-                  <h3 className="mb-0" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff' }}>
+                  <h3 className="mb-0" style={{ fontSize: '1.65rem', fontWeight: 700, color: '#fff' }}>
                     {formatCurrency(metrics.totalRevenue)}
                   </h3>
                 </div>
-                <div className="kpi-icon-wrapper info">
-                  <DollarSign className="text-info" size={28} style={{ color: '#17a2b8' }} />
+                <div className="admin-kpi-icon kpi-icon-wrapper info" style={{ backgroundColor: 'rgba(23, 162, 184, 0.25)' }}>
+                  <DollarSign size={28} style={{ color: '#17a2b8' }} />
                 </div>
               </div>
               <div className="mt-3 pt-3" style={{ borderTop: '1px solid #333' }}>
@@ -170,19 +160,19 @@ export default function KPIDashboard() {
         </Col>
 
         <Col md={3}>
-          <Card className="h-100 kpi-card border-0">
+          <Card className="h-100 kpi-card admin-kpi-card border-0">
             <Card.Body style={{ padding: '24px' }}>
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <div style={{ flex: 1 }}>
-                  <p className="text-muted mb-2" style={{ fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <p className="text-muted mb-2" style={{ fontSize: '0.8rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Total Pedidos
                   </p>
-                  <h3 className="mb-0" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff' }}>
+                  <h3 className="mb-0" style={{ fontSize: '1.65rem', fontWeight: 700, color: '#fff' }}>
                     {metrics.totalOrders.toLocaleString()}
                   </h3>
                 </div>
-                <div className="kpi-icon-wrapper success">
-                  <ShoppingBag className="text-success" size={28} style={{ color: '#0B6E4F' }} />
+                <div className="admin-kpi-icon kpi-icon-wrapper success" style={{ backgroundColor: 'rgba(0, 200, 83, 0.25)' }}>
+                  <ShoppingBag size={28} style={{ color: '#00C853' }} />
                 </div>
               </div>
               <div className="mt-3 pt-3" style={{ borderTop: '1px solid #333' }}>
@@ -196,19 +186,19 @@ export default function KPIDashboard() {
         </Col>
 
         <Col md={3}>
-          <Card className="h-100 kpi-card border-0">
+          <Card className="h-100 kpi-card admin-kpi-card border-0">
             <Card.Body style={{ padding: '24px' }}>
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <div style={{ flex: 1 }}>
-                  <p className="text-muted mb-2" style={{ fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <p className="text-muted mb-2" style={{ fontSize: '0.8rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Costos Totales
                   </p>
-                  <h3 className="mb-0" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#fff' }}>
+                  <h3 className="mb-0" style={{ fontSize: '1.65rem', fontWeight: 700, color: '#fff' }}>
                     {formatCurrency(metrics.totalCosts)}
                   </h3>
                 </div>
-                <div className="kpi-icon-wrapper warning">
-                  <Package className="text-warning" size={28} style={{ color: '#ffc107' }} />
+                <div className="admin-kpi-icon kpi-icon-wrapper warning" style={{ backgroundColor: 'rgba(255, 193, 7, 0.25)' }}>
+                  <Package size={28} style={{ color: '#FFD54F' }} />
                 </div>
               </div>
               <div className="mt-3 pt-3" style={{ borderTop: '1px solid #333' }}>
@@ -221,19 +211,19 @@ export default function KPIDashboard() {
         </Col>
 
         <Col md={3}>
-          <Card className="h-100 kpi-card border-0">
+          <Card className="h-100 kpi-card admin-kpi-card border-0">
             <Card.Body style={{ padding: '24px' }}>
               <div className="d-flex justify-content-between align-items-start mb-3">
                 <div style={{ flex: 1 }}>
-                  <p className="text-muted mb-2" style={{ fontSize: '0.875rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <p className="text-muted mb-2" style={{ fontSize: '0.8rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     Ganancia Neta
                   </p>
-                  <h3 className="mb-0" style={{ fontSize: '1.75rem', fontWeight: 700, color: '#0B6E4F' }}>
+                  <h3 className="mb-0" style={{ fontSize: '1.65rem', fontWeight: 700, color: '#00C853' }}>
                     {formatCurrency(metrics.totalProfit)}
                   </h3>
                 </div>
-                <div className="kpi-icon-wrapper success">
-                  <TrendingUp className="text-success" size={28} style={{ color: '#0B6E4F' }} />
+                <div className="admin-kpi-icon kpi-icon-wrapper success" style={{ backgroundColor: 'rgba(0, 200, 83, 0.25)' }}>
+                  <TrendingUp size={28} style={{ color: '#00C853' }} />
                 </div>
               </div>
               <div className="mt-3 pt-3" style={{ borderTop: '1px solid #333' }}>
@@ -275,29 +265,29 @@ export default function KPIDashboard() {
                     contentStyle={{
                       backgroundColor: '#1e1e1e',
                       border: '1px solid #333',
-                      borderRadius: '8px',
-                      color: '#fff'
+                      borderRadius: '12px',
+                      color: '#fff',
+                      padding: '12px 16px',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
                     }}
                   />
-                  <Legend 
-                    wrapperStyle={{ color: '#fff' }}
-                  />
+                  <Legend wrapperStyle={{ color: '#fff' }} />
                   <Line 
                     type="monotone" 
                     dataKey="revenue" 
-                    stroke="#0B6E4F" 
+                    stroke="#00C853" 
                     name="Ingresos" 
                     strokeWidth={3}
-                    dot={{ fill: '#0B6E4F', r: 4 }}
+                    dot={{ fill: '#00C853', r: 4 }}
                     activeDot={{ r: 6 }}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="orders" 
-                    stroke="#dc3545" 
+                    stroke="#E53935" 
                     name="Pedidos" 
                     strokeWidth={3}
-                    dot={{ fill: '#dc3545', r: 4 }}
+                    dot={{ fill: '#E53935', r: 4 }}
                     activeDot={{ r: 6 }}
                   />
                 </LineChart>
@@ -328,7 +318,7 @@ export default function KPIDashboard() {
                     {deliveryPieData.map((entry, index) => (
                       <Cell 
                         key={`cell-${index}`} 
-                        fill={index === 0 ? '#0B6E4F' : '#dc3545'} 
+                        fill={index === 0 ? '#00C853' : '#E53935'} 
                       />
                     ))}
                   </Pie>
@@ -345,14 +335,14 @@ export default function KPIDashboard() {
               <div className="mt-3 pt-3" style={{ borderTop: '1px solid #333' }}>
                 <div className="d-flex justify-content-between mb-2 align-items-center">
                   <span style={{ color: '#b0b0b0' }}>
-                    <Truck size={16} className="me-2" style={{ color: '#0B6E4F' }} />
+                    <Truck size={16} className="me-2" style={{ color: '#00C853' }} />
                     Delivery:
                   </span>
                   <strong style={{ color: '#fff' }}>{formatCurrency(metrics.deliveryVsPickup.deliveryRevenue)}</strong>
                 </div>
                 <div className="d-flex justify-content-between align-items-center">
                   <span style={{ color: '#b0b0b0' }}>
-                    <Home size={16} className="me-2" style={{ color: '#dc3545' }} />
+                    <Home size={16} className="me-2" style={{ color: '#E53935' }} />
                     Retiro:
                   </span>
                   <strong style={{ color: '#fff' }}>{formatCurrency(metrics.deliveryVsPickup.pickupRevenue)}</strong>
@@ -400,7 +390,7 @@ export default function KPIDashboard() {
                   />
                   <Bar 
                     dataKey="quantity" 
-                    fill="#0B6E4F" 
+                    fill="#00C853" 
                     name="Cantidad Vendida"
                     radius={[0, 8, 8, 0]}
                   />

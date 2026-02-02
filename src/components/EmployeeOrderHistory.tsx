@@ -155,8 +155,8 @@ export default function EmployeeOrderHistory() {
     return (
       <Container className="py-5">
         <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-3">Cargando historial...</p>
+          <Spinner animation="border" style={{ color: 'var(--brand-green)' }} />
+          <p className="mt-3 text-brand-gray-muted">Cargando historial...</p>
         </div>
       </Container>
     );
@@ -164,33 +164,33 @@ export default function EmployeeOrderHistory() {
 
   return (
     <Container className="py-4">
-      <Card className="shadow-sm">
-        <Card.Header className="bg-white border-bottom">
+      <Card className="panel-card">
+        <Card.Header className="bg-white border-bottom py-3" style={{ borderRadius: '1rem 1rem 0 0' }}>
           <div className="d-flex align-items-center justify-content-between">
-            <h4 className="mb-0 d-flex align-items-center">
-              <History size={24} className="me-2" />
+            <h4 className="mb-0 d-flex align-items-center fw-bold" style={{ color: 'var(--brand-black)', fontFamily: 'var(--font-display)' }}>
+              <History size={24} className="me-2" style={{ color: 'var(--brand-green)' }} />
               Historial de Pedidos
             </h4>
-            <Button variant="outline-primary" size="sm" onClick={loadOrders}>
+            <Button variant="outline-secondary" size="sm" className="rounded-3" onClick={loadOrders}>
               Actualizar
             </Button>
           </div>
         </Card.Header>
         <Card.Body className="p-0">
           {error && (
-            <Alert variant="danger" className="m-3">
+            <Alert variant="danger" className="m-3 rounded-3 border-0">
               {error}
             </Alert>
           )}
 
-          {/* Filtros */}
-          <div className="p-3 bg-light border-bottom">
+          <div className="p-3 border-bottom" style={{ backgroundColor: 'var(--gray-light)' }}>
             <Row className="g-3">
               <Col md={3}>
                 <Form.Group>
                   <Form.Label className="small fw-bold">Estado</Form.Label>
                   <Form.Select
                     size="sm"
+                    className="rounded-3"
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                   >
@@ -206,11 +206,7 @@ export default function EmployeeOrderHistory() {
               <Col md={3}>
                 <Form.Group>
                   <Form.Label className="small fw-bold">Tipo</Form.Label>
-                  <Form.Select
-                    size="sm"
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                  >
+                  <Form.Select size="sm" className="rounded-3" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
                     <option value="all">Todos</option>
                     <option value="employee">Registrados por Empleado</option>
                     <option value="online">Recibidos Online</option>
@@ -220,40 +216,28 @@ export default function EmployeeOrderHistory() {
               <Col md={3}>
                 <Form.Group>
                   <Form.Label className="small fw-bold">Buscar</Form.Label>
-                  <Form.Control
-                    size="sm"
-                    type="text"
-                    placeholder="Cliente, teléfono, ID..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+                  <Form.Control size="sm" type="text" className="rounded-3" placeholder="Cliente, teléfono, ID..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                 </Form.Group>
               </Col>
               <Col md={3}>
                 <Form.Group>
                   <Form.Label className="small fw-bold">Fecha</Form.Label>
-                  <Form.Control
-                    size="sm"
-                    type="date"
-                    value={dateFilter}
-                    onChange={(e) => setDateFilter(e.target.value)}
-                  />
+                  <Form.Control size="sm" type="date" className="rounded-3" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} />
                 </Form.Group>
               </Col>
             </Row>
           </div>
 
-          {/* Lista de pedidos */}
           {filteredOrders.length === 0 ? (
-            <div className="text-center py-5">
-              <History size={64} className="text-muted mb-3" />
-              <h6 className="text-muted">No hay pedidos que coincidan con los filtros</h6>
-              <p className="text-muted small">Ajusta los filtros para ver más resultados.</p>
+            <div className="panel-empty-state">
+              <div className="display-icon"><History size={48} /></div>
+              <h6 className="mb-2">No hay pedidos que coincidan con los filtros</h6>
+              <p className="text-muted small mb-0">Ajusta los filtros para ver más resultados.</p>
             </div>
           ) : (
             <div className="list-group list-group-flush">
               {filteredOrders.map((order) => (
-                <div key={order.id} className="list-group-item border-0 border-bottom p-4">
+                <div key={order.id} className="list-group-item border-0 border-bottom p-4 rounded-0" style={{ transition: 'background 0.2s' }}>
                   <Row className="align-items-center">
                     <Col md={8}>
                       <div className="d-flex justify-content-between align-items-start mb-2">
@@ -286,7 +270,7 @@ export default function EmployeeOrderHistory() {
                         </div>
                         <div className="col-sm-6">
                           <small className="text-muted">Total:</small>
-                          <p className="mb-1 fw-bold text-success">${order.total.toLocaleString()}</p>
+                          <p className="mb-1 fw-bold" style={{ color: 'var(--brand-green)' }}>${order.total.toLocaleString()}</p>
                         </div>
                       </div>
 
@@ -301,11 +285,7 @@ export default function EmployeeOrderHistory() {
                       </div>
                     </Col>
                     <Col md={4} className="text-md-end mt-3 mt-md-0">
-                      <Button 
-                        variant="outline-primary" 
-                        size="sm"
-                        onClick={() => handleShowDetails(order)}
-                      >
+                      <Button variant="outline-secondary" size="sm" className="rounded-3" onClick={() => handleShowDetails(order)}>
                         Ver Detalles
                       </Button>
                     </Col>

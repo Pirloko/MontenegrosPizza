@@ -103,24 +103,18 @@ export default function CustomerOrders() {
   };
 
   const getStatusBadge = (status: string, deliveryType?: string) => {
-    const statusConfig = {
-      'received': { variant: 'primary', icon: Clock, text: 'Recibido' },
-      'preparing': { variant: 'warning', icon: Package, text: 'Preparando' },
-      'ready': { 
-        variant: 'info', 
-        icon: CheckCircle, 
-        text: deliveryType === 'pickup' ? 'Listo para retirar' : 'Listo para entrega'
-      },
-      'on_the_way': { variant: 'secondary', icon: Truck, text: 'En Camino' },
-      'delivered': { variant: 'success', icon: CheckCircle, text: 'Entregado' },
-      'cancelled': { variant: 'danger', icon: XCircle, text: 'Cancelado' }
+    const statusConfig: Record<string, { badgeClass: string; icon: typeof Clock; text: string }> = {
+      received: { badgeClass: 'order-badge-received', icon: Clock, text: 'Recibido' },
+      preparing: { badgeClass: 'order-badge-preparing', icon: Package, text: 'Preparando' },
+      ready: { badgeClass: 'order-badge-ready', icon: CheckCircle, text: deliveryType === 'pickup' ? 'Listo para retirar' : 'Listo para entrega' },
+      on_the_way: { badgeClass: 'order-badge-on_the_way', icon: Truck, text: 'En Camino' },
+      delivered: { badgeClass: 'order-badge-delivered', icon: CheckCircle, text: 'Entregado' },
+      cancelled: { badgeClass: 'order-badge-cancelled', icon: XCircle, text: 'Cancelado' }
     };
-
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.received;
+    const config = statusConfig[status] || statusConfig.received;
     const IconComponent = config.icon;
-
     return (
-      <Badge bg={config.variant} className="d-flex align-items-center gap-1">
+      <Badge className={`d-inline-flex align-items-center gap-1 ${config.badgeClass}`} style={{ padding: '6px 12px', borderRadius: '8px', border: 'none' }}>
         <IconComponent size={12} />
         {config.text}
       </Badge>
@@ -141,8 +135,8 @@ export default function CustomerOrders() {
     return (
       <Container className="py-5">
         <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-3">Cargando pedidos...</p>
+          <Spinner animation="border" style={{ color: '#00C853' }} />
+          <p className="mt-3 text-brand-gray-muted">Cargando pedidos...</p>
         </div>
       </Container>
     );
@@ -150,14 +144,14 @@ export default function CustomerOrders() {
 
   return (
     <Container className="py-4">
-      <Card className="shadow-sm">
-        <Card.Header className="bg-white border-bottom">
+      <Card className="panel-card">
+        <Card.Header className="bg-white">
           <div className="d-flex align-items-center justify-content-between">
-            <h4 className="mb-0 d-flex align-items-center">
-              <History size={24} className="me-2" />
+            <h4 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+              <History size={24} className="me-2" style={{ color: '#00C853' }} />
               Mis Pedidos
             </h4>
-            <Button variant="outline-primary" size="sm" onClick={loadOrders}>
+            <Button variant="outline-secondary" size="sm" className="rounded-3" onClick={loadOrders}>
               <RefreshCw size={16} className="me-1" />
               Actualizar
             </Button>
@@ -171,11 +165,13 @@ export default function CustomerOrders() {
           )}
 
           {orders.length === 0 ? (
-            <div className="text-center py-5">
-              <Package size={64} className="text-muted mb-3" />
-              <h5 className="text-muted">No tienes pedidos aún</h5>
-              <p className="text-muted">Cuando hagas tu primer pedido, aparecerá aquí.</p>
-              <Button variant="primary" href="/">
+            <div className="panel-empty-state">
+              <div className="display-icon">
+                <Package size={48} />
+              </div>
+              <h5 className="fw-semibold mb-2">No tienes pedidos aún</h5>
+              <p className="mb-4">Cuando hagas tu primer pedido, aparecerá aquí.</p>
+              <Button className="panel-btn-primary rounded-3 px-4" href="/">
                 Hacer Pedido
               </Button>
             </div>
@@ -187,8 +183,8 @@ export default function CustomerOrders() {
                 if (activeOrders.length > 0) {
                   return (
                     <>
-                      <div className="bg-light px-4 py-3 border-bottom">
-                        <h5 className="mb-0 text-primary">🔔 Pedidos Activos ({activeOrders.length})</h5>
+                      <div className="px-4 py-3 border-bottom" style={{ backgroundColor: 'rgba(0,200,83,0.06)', borderColor: '#eee' }}>
+                        <h5 className="mb-0 fw-semibold" style={{ color: '#00C853' }}>🔔 Pedidos Activos ({activeOrders.length})</h5>
                       </div>
                       <div className="list-group list-group-flush">
                         {activeOrders.map((order) => (
@@ -242,12 +238,8 @@ export default function CustomerOrders() {
                                 </div>
                               </Col>
                               <Col md={4} className="text-end">
-                                <h4 className="text-success mb-3">${order.total.toLocaleString()}</h4>
-                                <Button
-                                  variant="outline-primary"
-                                  size="sm"
-                                  onClick={() => handleShowDetails(order)}
-                                >
+                                <h4 className="fw-bold mb-3" style={{ color: '#00C853' }}>${order.total.toLocaleString('es-CL')}</h4>
+                                <Button variant="outline-secondary" size="sm" className="rounded-3" onClick={() => handleShowDetails(order)}>
                                   Ver Detalles
                                 </Button>
                               </Col>
@@ -264,8 +256,8 @@ export default function CustomerOrders() {
               {/* Historial de Pedidos con Paginación */}
               {historyOrders.length > 0 && (
                 <>
-                  <div className="bg-light px-4 py-3 border-bottom">
-                    <h6 className="mb-0 text-muted">📋 Historial ({historyOrders.length})</h6>
+                  <div className="px-4 py-3 border-bottom" style={{ backgroundColor: '#F5F5F5', borderColor: '#eee' }}>
+                    <h6 className="mb-0 text-brand-gray-muted">📋 Historial ({historyOrders.length})</h6>
                   </div>
                   <div className="list-group list-group-flush">
                     {currentItems.map((order) => (
@@ -293,19 +285,13 @@ export default function CustomerOrders() {
                                 Ver Detalles
                               </Button>
                               {order.status === 'delivered' && !ratedOrders.has(order.id) && (
-                                <Button
-                                  variant="warning"
-                                  size="sm"
-                                  onClick={() => handleOpenRatingModal(order)}
-                                >
+                                <Button size="sm" className="rounded-3 panel-btn-primary" onClick={() => handleOpenRatingModal(order)}>
                                   <Star size={14} className="me-1" />
                                   Calificar
                                 </Button>
                               )}
                               {ratedOrders.has(order.id) && (
-                                <Badge bg="success" className="align-self-center">
-                                  ✓ Calificado
-                                </Badge>
+                                <Badge className="order-badge-delivered align-self-center" style={{ padding: '6px 10px' }}>✓ Calificado</Badge>
                               )}
                             </div>
                           </Col>

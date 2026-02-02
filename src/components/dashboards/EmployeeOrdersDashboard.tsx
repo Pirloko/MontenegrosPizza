@@ -98,13 +98,12 @@ export default function EmployeeOrdersDashboard() {
 
     return (
       <div className="mt-3 border-top pt-3">
-        <h6 className="mb-2 fw-bold">Productos del Pedido:</h6>
+        <h6 className="mb-2 fw-bold" style={{ color: 'var(--brand-black)' }}>Productos del Pedido</h6>
         {items.map((item, index) => {
           const removedIngredients = parseIngredients(item.removed_ingredients);
           const addedIngredients = parseIngredients(item.added_ingredients);
-          
           return (
-            <div key={item.id || index} className="mb-3 p-2 bg-light rounded">
+            <div key={item.id || index} className="mb-3 p-3 rounded-3" style={{ backgroundColor: 'var(--gray-light)' }}>
               <div className="d-flex justify-content-between align-items-start mb-1">
                 <div className="flex-grow-1">
                   <strong className="d-block">{item.product_name}</strong>
@@ -234,8 +233,8 @@ export default function EmployeeOrdersDashboard() {
   if (loading) {
     return (
       <div className="text-center py-5">
-        <Spinner animation="border" variant="primary" />
-        <p className="mt-3">Cargando pedidos...</p>
+        <Spinner animation="border" style={{ color: 'var(--brand-green)' }} />
+        <p className="mt-3 text-brand-gray-muted">Cargando pedidos...</p>
       </div>
     );
   }
@@ -245,8 +244,10 @@ export default function EmployeeOrdersDashboard() {
       <Row className="mb-4">
         <Col>
           <div className="d-flex justify-content-between align-items-center">
-            <h3>Pedidos Activos</h3>
-            <Button variant="outline-primary" onClick={loadOrders}>
+            <h3 className="fw-bold mb-0" style={{ color: 'var(--brand-black)', fontFamily: 'var(--font-display)' }}>
+              Pedidos Activos
+            </h3>
+            <Button variant="outline-secondary" className="rounded-3" onClick={loadOrders}>
               <RefreshCw size={18} className="me-1" />
               Actualizar
             </Button>
@@ -255,79 +256,82 @@ export default function EmployeeOrdersDashboard() {
       </Row>
 
       {error && (
-        <Alert variant="danger" className="mb-4">
+        <Alert variant="danger" className="mb-4 rounded-3 border-0">
           {error}
         </Alert>
       )}
 
-      {/* Resumen de Estados */}
-      <Row className="mb-4">
+      {/* Resumen de Estados - KPI con diseño de marca */}
+      <Row className="mb-4 g-3">
         <Col md={3}>
-          <Card className="bg-warning text-white">
-            <Card.Body className="text-center">
-              <Clock size={32} className="mb-2" />
-              <h4>{getOrdersByStatus('received').length}</h4>
-              <p className="mb-0">Recibidos</p>
+          <Card className="panel-card border-0 overflow-hidden">
+            <Card.Body className="text-center py-4" style={{ background: 'linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%)' }}>
+              <Clock size={32} className="mb-2" style={{ color: '#F57C00' }} />
+              <h4 className="fw-bold mb-0" style={{ color: '#1a1a1a' }}>{getOrdersByStatus('received').length}</h4>
+              <p className="mb-0 small" style={{ color: '#424242' }}>Recibidos</p>
             </Card.Body>
           </Card>
         </Col>
         <Col md={3}>
-          <Card className="bg-info text-white">
-            <Card.Body className="text-center">
-              <Package size={32} className="mb-2" />
-              <h4>{getOrdersByStatus('preparing').length}</h4>
-              <p className="mb-0">Preparando</p>
+          <Card className="panel-card border-0 overflow-hidden">
+            <Card.Body className="text-center py-4" style={{ background: 'linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)' }}>
+              <Package size={32} className="mb-2" style={{ color: '#1976D2' }} />
+              <h4 className="fw-bold mb-0" style={{ color: '#1a1a1a' }}>{getOrdersByStatus('preparing').length}</h4>
+              <p className="mb-0 small" style={{ color: '#424242' }}>Preparando</p>
             </Card.Body>
           </Card>
         </Col>
         <Col md={3}>
-          <Card className="bg-primary text-white">
-            <Card.Body className="text-center">
-              <CheckCircle size={32} className="mb-2" />
-              <h4>{getOrdersByStatus('ready').length}</h4>
-              <p className="mb-0">Listos</p>
+          <Card className="panel-card border-0 overflow-hidden">
+            <Card.Body className="text-center py-4" style={{ background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)' }}>
+              <CheckCircle size={32} className="mb-2" style={{ color: '#00C853' }} />
+              <h4 className="fw-bold mb-0" style={{ color: '#1a1a1a' }}>{getOrdersByStatus('ready').length}</h4>
+              <p className="mb-0 small" style={{ color: '#424242' }}>Listos</p>
             </Card.Body>
           </Card>
         </Col>
         <Col md={3}>
-          <Card className="bg-secondary text-white">
-            <Card.Body className="text-center">
-              <Truck size={32} className="mb-2" />
-              <h4>{getOrdersByStatus('on_the_way').length}</h4>
-              <p className="mb-0">En Camino</p>
+          <Card className="panel-card border-0 overflow-hidden">
+            <Card.Body className="text-center py-4" style={{ background: 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)' }}>
+              <Truck size={32} className="mb-2" style={{ color: '#7B1FA2' }} />
+              <h4 className="fw-bold mb-0" style={{ color: '#1a1a1a' }}>{getOrdersByStatus('on_the_way').length}</h4>
+              <p className="mb-0 small" style={{ color: '#424242' }}>En Camino</p>
             </Card.Body>
           </Card>
         </Col>
       </Row>
 
       {/* Lista de Pedidos por Estado */}
-      <Row>
+      <Row className="g-4">
         {/* Pedidos Recibidos */}
-        <Col md={6} className="mb-4">
-          <Card>
-            <Card.Header className="bg-warning text-white">
-              <h5 className="mb-0 d-flex align-items-center">
-                <Clock className="me-2" />
+        <Col md={6}>
+          <Card className="panel-card">
+            <Card.Header className="border-bottom py-3" style={{ background: 'linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%)', borderRadius: '1rem 1rem 0 0' }}>
+              <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                <Clock className="me-2" style={{ color: '#F57C00' }} />
                 Pedidos Recibidos ({getOrdersByStatus('received').length})
               </h5>
             </Card.Header>
             <Card.Body>
               {getOrdersByStatus('received').length === 0 ? (
-                <p className="text-muted text-center mb-0">No hay pedidos recibidos</p>
+                <div className="panel-empty-state">
+                  <div className="display-icon"><Clock size={40} /></div>
+                  <p className="mb-0">No hay pedidos recibidos</p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {getOrdersByStatus('received').map((order) => (
-                    <div key={order.id} className="border rounded p-3 mb-3">
+                    <div key={order.id} className="border rounded-3 p-3 mb-3 bg-white shadow-sm">
                       <div className="d-flex justify-content-between align-items-start mb-2">
                         <div className="flex-grow-1">
-                          <h6 className="mb-1">#{order.order_number}</h6>
+                          <h6 className="mb-1 fw-bold">#{order.order_number}</h6>
                           <p className="mb-1"><strong>{order.customer_name}</strong></p>
-                          <p className="mb-1 text-muted">{order.customer_phone}</p>
+                          <p className="mb-1 text-muted small">{order.customer_phone}</p>
                           <small className="text-muted">{formatDate(order.created_at!)}</small>
                         </div>
                         <div className="text-end">
-                          <h6 className="mb-1">${order.total.toLocaleString()}</h6>
-                          <Badge bg={order.delivery_type === 'delivery' ? 'info' : 'secondary'}>
+                          <h6 className="mb-1 fw-bold" style={{ color: 'var(--brand-green)' }}>${order.total.toLocaleString()}</h6>
+                          <Badge className="border-0" style={{ background: order.delivery_type === 'delivery' ? '#E3F2FD' : '#F5F5F5', color: order.delivery_type === 'delivery' ? '#1976D2' : '#424242' }}>
                             {order.delivery_type === 'delivery' ? 'Delivery' : 'Retiro'}
                           </Badge>
                         </div>
@@ -336,32 +340,23 @@ export default function EmployeeOrdersDashboard() {
                       <Button
                         variant="outline-secondary"
                         size="sm"
-                        className="w-100 mb-2"
+                        className="w-100 mb-2 rounded-3"
                         onClick={() => toggleOrderExpanded(order.id)}
                       >
                         {expandedOrders.has(order.id) ? (
-                          <>
-                            <ChevronUp size={16} className="me-1" />
-                            Ocultar Productos
-                          </>
+                          <><ChevronUp size={16} className="me-1" /> Ocultar Productos</>
                         ) : (
-                          <>
-                            <ChevronDown size={16} className="me-1" />
-                            Ver Productos
-                          </>
+                          <><ChevronDown size={16} className="me-1" /> Ver Productos</>
                         )}
                       </Button>
                       
                       <Collapse in={expandedOrders.has(order.id)}>
-                        <div>
-                          {renderOrderItems(order)}
-                        </div>
+                        <div>{renderOrderItems(order)}</div>
                       </Collapse>
                       
                       <Button
-                        variant="info"
                         size="sm"
-                        className="w-100 mt-2"
+                        className="w-100 mt-2 rounded-3 panel-btn-primary"
                         onClick={() => handleStartPreparing(order.id, order.order_number)}
                       >
                         <Package className="me-1" />
@@ -376,95 +371,61 @@ export default function EmployeeOrdersDashboard() {
         </Col>
 
         {/* Pedidos Preparando */}
-        <Col md={6} className="mb-4">
-          <Card>
-            <Card.Header className="bg-info text-white">
-              <h5 className="mb-0 d-flex align-items-center">
-                <Package className="me-2" />
+        <Col md={6}>
+          <Card className="panel-card">
+            <Card.Header className="border-bottom py-3" style={{ background: 'linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)', borderRadius: '1rem 1rem 0 0' }}>
+              <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                <Package className="me-2" style={{ color: '#1976D2' }} />
                 Preparando ({getOrdersByStatus('preparing').length})
               </h5>
             </Card.Header>
             <Card.Body>
               {getOrdersByStatus('preparing').length === 0 ? (
-                <p className="text-muted text-center mb-0">No hay pedidos en preparación</p>
+                <div className="panel-empty-state">
+                  <div className="display-icon"><Package size={40} /></div>
+                  <p className="mb-0">No hay pedidos en preparación</p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {getOrdersByStatus('preparing').map((order) => {
-                    // Calcular tiempo restante si hay tiempo estimado
                     const estimatedTime = (order as any).estimated_ready_time;
                     let timeInfo = null;
                     if (estimatedTime) {
                       const now = new Date();
                       const createdAt = new Date(order.created_at!);
-                      const elapsed = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60)); // minutos transcurridos
+                      const elapsed = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60));
                       const remaining = estimatedTime - elapsed;
-                      timeInfo = {
-                        total: estimatedTime,
-                        elapsed,
-                        remaining: remaining > 0 ? remaining : 0
-                      };
+                      timeInfo = { total: estimatedTime, elapsed, remaining: remaining > 0 ? remaining : 0 };
                     }
-                    
                     return (
-                      <div key={order.id} className="border rounded p-3 mb-3">
+                      <div key={order.id} className="border rounded-3 p-3 mb-3 bg-white shadow-sm">
                         <div className="d-flex justify-content-between align-items-start mb-2">
                           <div className="flex-grow-1">
-                            <h6 className="mb-1">#{order.order_number}</h6>
+                            <h6 className="mb-1 fw-bold">#{order.order_number}</h6>
                             <p className="mb-1"><strong>{order.customer_name}</strong></p>
-                            <p className="mb-1 text-muted">{order.customer_phone}</p>
+                            <p className="mb-1 text-muted small">{order.customer_phone}</p>
                             <small className="text-muted">{formatDate(order.created_at!)}</small>
                             {timeInfo && (
                               <div className="mt-2">
-                                <Badge bg={timeInfo.remaining > 0 ? 'info' : 'warning'}>
-                                  {timeInfo.remaining > 0 
-                                    ? `⏱️ ~${timeInfo.remaining} min restantes`
-                                    : `⏱️ Tiempo estimado: ${timeInfo.total} min`
-                                  }
+                                <Badge className="border-0" style={{ background: timeInfo.remaining > 0 ? '#E3F2FD' : '#FFF8E1', color: timeInfo.remaining > 0 ? '#1976D2' : '#F57C00' }}>
+                                  {timeInfo.remaining > 0 ? `⏱️ ~${timeInfo.remaining} min restantes` : `⏱️ Tiempo: ${timeInfo.total} min`}
                                 </Badge>
                               </div>
                             )}
                           </div>
                           <div className="text-end">
-                            <h6 className="mb-1">${order.total.toLocaleString()}</h6>
-                            <Badge bg={order.delivery_type === 'delivery' ? 'info' : 'secondary'}>
+                            <h6 className="mb-1 fw-bold" style={{ color: 'var(--brand-green)' }}>${order.total.toLocaleString()}</h6>
+                            <Badge className="border-0" style={{ background: order.delivery_type === 'delivery' ? '#E3F2FD' : '#F5F5F5', color: order.delivery_type === 'delivery' ? '#1976D2' : '#424242' }}>
                               {order.delivery_type === 'delivery' ? 'Delivery' : 'Retiro'}
                             </Badge>
                           </div>
                         </div>
-                        
-                        <Button
-                          variant="outline-secondary"
-                          size="sm"
-                          className="w-100 mb-2"
-                          onClick={() => toggleOrderExpanded(order.id)}
-                        >
-                          {expandedOrders.has(order.id) ? (
-                            <>
-                              <ChevronUp size={16} className="me-1" />
-                              Ocultar Productos
-                            </>
-                          ) : (
-                            <>
-                              <ChevronDown size={16} className="me-1" />
-                              Ver Productos
-                            </>
-                          )}
+                        <Button variant="outline-secondary" size="sm" className="w-100 mb-2 rounded-3" onClick={() => toggleOrderExpanded(order.id)}>
+                          {expandedOrders.has(order.id) ? <><ChevronUp size={16} className="me-1" /> Ocultar Productos</> : <><ChevronDown size={16} className="me-1" /> Ver Productos</>}
                         </Button>
-                        
-                        <Collapse in={expandedOrders.has(order.id)}>
-                          <div>
-                            {renderOrderItems(order)}
-                          </div>
-                        </Collapse>
-                        
-                        <Button
-                          variant="success"
-                          size="sm"
-                          className="w-100 mt-2"
-                          onClick={() => updateOrderStatus(order.id, 'ready')}
-                        >
-                          <CheckCircle className="me-1" />
-                          Marcar como Listo
+                        <Collapse in={expandedOrders.has(order.id)}><div>{renderOrderItems(order)}</div></Collapse>
+                        <Button size="sm" className="w-100 mt-2 rounded-3 panel-btn-primary" onClick={() => updateOrderStatus(order.id, 'ready')}>
+                          <CheckCircle className="me-1" /> Marcar como Listo
                         </Button>
                       </div>
                     );
@@ -476,89 +437,56 @@ export default function EmployeeOrdersDashboard() {
         </Col>
 
         {/* Pedidos Listos */}
-        <Col md={6} className="mb-4">
-          <Card>
-            <Card.Header className="bg-primary text-white">
-              <h5 className="mb-0 d-flex align-items-center">
-                <CheckCircle className="me-2" />
+        <Col md={6}>
+          <Card className="panel-card">
+            <Card.Header className="border-bottom py-3" style={{ background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)', borderRadius: '1rem 1rem 0 0' }}>
+              <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                <CheckCircle className="me-2" style={{ color: '#00C853' }} />
                 Listos para Entrega ({getOrdersByStatus('ready').length})
               </h5>
             </Card.Header>
             <Card.Body>
               {getOrdersByStatus('ready').length === 0 ? (
-                <p className="text-muted text-center mb-0">No hay pedidos listos</p>
+                <div className="panel-empty-state">
+                  <div className="display-icon"><CheckCircle size={40} /></div>
+                  <p className="mb-0">No hay pedidos listos</p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {getOrdersByStatus('ready').map((order) => (
-                    <div key={order.id} className="border rounded p-3 mb-3">
+                    <div key={order.id} className="border rounded-3 p-3 mb-3 bg-white shadow-sm">
                       <div className="d-flex justify-content-between align-items-start mb-2">
                         <div className="flex-grow-1">
-                          <h6 className="mb-1">#{order.order_number}</h6>
+                          <h6 className="mb-1 fw-bold">#{order.order_number}</h6>
                           <p className="mb-1"><strong>{order.customer_name}</strong></p>
-                          <p className="mb-1 text-muted">{order.customer_phone}</p>
-                          {order.delivery_address && (
-                            <p className="mb-1 text-muted small">{order.delivery_address}</p>
-                          )}
+                          <p className="mb-1 text-muted small">{order.customer_phone}</p>
+                          {order.delivery_address && <p className="mb-1 text-muted small">{order.delivery_address}</p>}
                           {order.delivery_type === 'pickup' && (order as any).pickup_code && (
                             <div className="mt-2">
-                              <Badge bg="dark" style={{ fontSize: '1rem', padding: '0.5rem 1rem' }}>
+                              <Badge className="border-0" style={{ background: '#1a1a1a', color: '#fff', fontSize: '1rem', padding: '0.5rem 1rem', borderRadius: '8px' }}>
                                 🎫 Código: {(order as any).pickup_code}
                               </Badge>
                             </div>
                           )}
                         </div>
                         <div className="text-end">
-                          <h6 className="mb-1">${order.total.toLocaleString()}</h6>
-                          <Badge bg={order.delivery_type === 'delivery' ? 'info' : 'secondary'}>
+                          <h6 className="mb-1 fw-bold" style={{ color: 'var(--brand-green)' }}>${order.total.toLocaleString()}</h6>
+                          <Badge className="border-0" style={{ background: order.delivery_type === 'delivery' ? '#E3F2FD' : '#F5F5F5', color: order.delivery_type === 'delivery' ? '#1976D2' : '#424242' }}>
                             {order.delivery_type === 'delivery' ? 'Delivery' : 'Retiro'}
                           </Badge>
                         </div>
                       </div>
-                      
-                      <Button
-                        variant="outline-secondary"
-                        size="sm"
-                        className="w-100 mb-2"
-                        onClick={() => toggleOrderExpanded(order.id)}
-                      >
-                        {expandedOrders.has(order.id) ? (
-                          <>
-                            <ChevronUp size={16} className="me-1" />
-                            Ocultar Productos
-                          </>
-                        ) : (
-                          <>
-                            <ChevronDown size={16} className="me-1" />
-                            Ver Productos
-                          </>
-                        )}
+                      <Button variant="outline-secondary" size="sm" className="w-100 mb-2 rounded-3" onClick={() => toggleOrderExpanded(order.id)}>
+                        {expandedOrders.has(order.id) ? <><ChevronUp size={16} className="me-1" /> Ocultar Productos</> : <><ChevronDown size={16} className="me-1" /> Ver Productos</>}
                       </Button>
-                      
-                      <Collapse in={expandedOrders.has(order.id)}>
-                        <div>
-                          {renderOrderItems(order)}
-                        </div>
-                      </Collapse>
-                      
+                      <Collapse in={expandedOrders.has(order.id)}><div>{renderOrderItems(order)}</div></Collapse>
                       {order.delivery_type === 'delivery' ? (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          className="w-100 mt-2"
-                          onClick={() => updateOrderStatus(order.id, 'on_the_way')}
-                        >
-                          <Truck className="me-1" />
-                          Enviar Delivery
+                        <Button variant="outline-secondary" size="sm" className="w-100 mt-2 rounded-3" onClick={() => updateOrderStatus(order.id, 'on_the_way')}>
+                          <Truck className="me-1" /> Enviar Delivery
                         </Button>
                       ) : (
-                        <Button
-                          variant="success"
-                          size="sm"
-                          className="w-100 mt-2"
-                          onClick={() => updateOrderStatus(order.id, 'delivered')}
-                        >
-                          <CheckCircle className="me-1" />
-                          Entregado (Retiro)
+                        <Button size="sm" className="w-100 mt-2 rounded-3 panel-btn-primary" onClick={() => updateOrderStatus(order.id, 'delivered')}>
+                          <CheckCircle className="me-1" /> Entregado (Retiro)
                         </Button>
                       )}
                     </div>
@@ -570,67 +498,42 @@ export default function EmployeeOrdersDashboard() {
         </Col>
 
         {/* Pedidos En Camino */}
-        <Col md={6} className="mb-4">
-          <Card>
-            <Card.Header className="bg-secondary text-white">
-              <h5 className="mb-0 d-flex align-items-center">
-                <Truck className="me-2" />
+        <Col md={6}>
+          <Card className="panel-card">
+            <Card.Header className="border-bottom py-3" style={{ background: 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)', borderRadius: '1rem 1rem 0 0' }}>
+              <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                <Truck className="me-2" style={{ color: '#7B1FA2' }} />
                 En Camino ({getOrdersByStatus('on_the_way').length})
               </h5>
             </Card.Header>
             <Card.Body>
               {getOrdersByStatus('on_the_way').length === 0 ? (
-                <p className="text-muted text-center mb-0">No hay pedidos en camino</p>
+                <div className="panel-empty-state">
+                  <div className="display-icon"><Truck size={40} /></div>
+                  <p className="mb-0">No hay pedidos en camino</p>
+                </div>
               ) : (
                 <div className="space-y-2">
                   {getOrdersByStatus('on_the_way').map((order) => (
-                    <div key={order.id} className="border rounded p-3 mb-3">
+                    <div key={order.id} className="border rounded-3 p-3 mb-3 bg-white shadow-sm">
                       <div className="d-flex justify-content-between align-items-start mb-2">
                         <div className="flex-grow-1">
-                          <h6 className="mb-1">#{order.order_number}</h6>
+                          <h6 className="mb-1 fw-bold">#{order.order_number}</h6>
                           <p className="mb-1"><strong>{order.customer_name}</strong></p>
-                          <p className="mb-1 text-muted">{order.customer_phone}</p>
+                          <p className="mb-1 text-muted small">{order.customer_phone}</p>
                           <p className="mb-1 text-muted small">{order.delivery_address}</p>
                         </div>
                         <div className="text-end">
-                          <h6 className="mb-1">${order.total.toLocaleString()}</h6>
-                          <Badge bg="info">Delivery</Badge>
+                          <h6 className="mb-1 fw-bold" style={{ color: 'var(--brand-green)' }}>${order.total.toLocaleString()}</h6>
+                          <Badge className="border-0" style={{ background: '#E3F2FD', color: '#1976D2' }}>Delivery</Badge>
                         </div>
                       </div>
-                      
-                      <Button
-                        variant="outline-secondary"
-                        size="sm"
-                        className="w-100 mb-2"
-                        onClick={() => toggleOrderExpanded(order.id)}
-                      >
-                        {expandedOrders.has(order.id) ? (
-                          <>
-                            <ChevronUp size={16} className="me-1" />
-                            Ocultar Productos
-                          </>
-                        ) : (
-                          <>
-                            <ChevronDown size={16} className="me-1" />
-                            Ver Productos
-                          </>
-                        )}
+                      <Button variant="outline-secondary" size="sm" className="w-100 mb-2 rounded-3" onClick={() => toggleOrderExpanded(order.id)}>
+                        {expandedOrders.has(order.id) ? <><ChevronUp size={16} className="me-1" /> Ocultar Productos</> : <><ChevronDown size={16} className="me-1" /> Ver Productos</>}
                       </Button>
-                      
-                      <Collapse in={expandedOrders.has(order.id)}>
-                        <div>
-                          {renderOrderItems(order)}
-                        </div>
-                      </Collapse>
-                      
-                      <Button
-                        variant="success"
-                        size="sm"
-                        className="w-100 mt-2"
-                        onClick={() => updateOrderStatus(order.id, 'delivered')}
-                      >
-                        <CheckCircle className="me-1" />
-                        Marcar como Entregado
+                      <Collapse in={expandedOrders.has(order.id)}><div>{renderOrderItems(order)}</div></Collapse>
+                      <Button size="sm" className="w-100 mt-2 rounded-3 panel-btn-primary" onClick={() => updateOrderStatus(order.id, 'delivered')}>
+                        <CheckCircle className="me-1" /> Marcar como Entregado
                       </Button>
                     </div>
                   ))}
@@ -642,14 +545,14 @@ export default function EmployeeOrdersDashboard() {
       </Row>
 
       {/* Modal de Tiempo Estimado */}
-      <Modal show={showTimeModal} onHide={() => setShowTimeModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Estimar Tiempo de Preparación</Modal.Title>
+      <Modal show={showTimeModal} onHide={() => setShowTimeModal(false)} contentClassName="rounded-3 border-0 shadow-lg">
+        <Modal.Header closeButton className="border-bottom" style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #00A843 100%)', color: '#fff' }}>
+          <Modal.Title className="fw-bold" style={{ fontFamily: 'var(--font-display)' }}>Estimar Tiempo de Preparación</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <p>Pedido: <strong>#{orderToPrepare?.orderNumber}</strong></p>
+        <Modal.Body className="p-4">
+          <p className="mb-3">Pedido: <strong>#{orderToPrepare?.orderNumber}</strong></p>
           <Form.Group className="mb-3">
-            <Form.Label>Tiempo estimado (en minutos)</Form.Label>
+            <Form.Label className="fw-bold">Tiempo estimado (minutos)</Form.Label>
             <Form.Control
               type="number"
               min="1"
@@ -657,20 +560,16 @@ export default function EmployeeOrdersDashboard() {
               value={estimatedTime}
               onChange={(e) => setEstimatedTime(parseInt(e.target.value) || 30)}
               placeholder="30"
+              className="rounded-3"
             />
             <Form.Text className="text-muted">
-              Ingresa cuántos minutos aproximadamente tardará en estar listo este pedido.
+              Minutos aproximados para tener el pedido listo.
             </Form.Text>
           </Form.Group>
-          
-          {/* Selector de repartidor solo si es delivery */}
           {orderToPrepare?.deliveryType === 'delivery' && (
             <Form.Group className="mb-3">
-              <Form.Label>Asignar Repartidor (opcional)</Form.Label>
-              <Form.Select
-                value={selectedDriver}
-                onChange={(e) => setSelectedDriver(e.target.value)}
-              >
+              <Form.Label className="fw-bold">Asignar Repartidor (opcional)</Form.Label>
+              <Form.Select value={selectedDriver} onChange={(e) => setSelectedDriver(e.target.value)} className="rounded-3">
                 <option value="">-- Seleccionar repartidor --</option>
                 {availableDrivers.map((driver) => (
                   <option key={driver.id} value={driver.id}>
@@ -679,16 +578,14 @@ export default function EmployeeOrdersDashboard() {
                 ))}
               </Form.Select>
               <Form.Text className="text-muted">
-                Puedes asignar un repartidor ahora o dejarlo sin asignar. El repartidor podrá tomar el pedido cuando esté listo.
+                Opcional. El repartidor podrá tomar el pedido cuando esté listo.
               </Form.Text>
             </Form.Group>
           )}
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowTimeModal(false)}>
-            Cancelar
-          </Button>
-          <Button variant="info" onClick={handleConfirmPreparing}>
+        <Modal.Footer className="border-top bg-light">
+          <Button variant="outline-secondary" className="rounded-3" onClick={() => setShowTimeModal(false)}>Cancelar</Button>
+          <Button className="rounded-3 panel-btn-primary" onClick={handleConfirmPreparing}>
             Confirmar y Empezar a Preparar
           </Button>
         </Modal.Footer>

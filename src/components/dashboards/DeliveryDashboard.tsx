@@ -108,8 +108,8 @@ export default function DeliveryDashboard() {
     return (
       <Container className="py-5">
         <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-3">Cargando pedidos...</p>
+          <Spinner animation="border" style={{ color: '#00C853' }} />
+          <p className="mt-3 text-brand-gray-muted">Cargando pedidos...</p>
         </div>
       </Container>
     );
@@ -119,31 +119,29 @@ export default function DeliveryDashboard() {
     <Container className="py-4">
       <Row className="mb-4">
         <Col>
-          <div className="d-flex justify-content-between align-items-center">
+          <div className="d-flex flex-wrap justify-content-between align-items-center gap-3">
             <div>
-              <h2 className="d-flex align-items-center gap-2 mb-1">
-                <Truck size={28} />
-                Dashboard de Repartidor
+              <h2 className="d-flex align-items-center gap-2 mb-1 fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                <Truck size={28} style={{ color: '#00C853' }} />
+                Dashboard Repartidor
               </h2>
-              <p className="text-muted mb-0">Gestiona tus entregas en curso y toma nuevos pedidos</p>
+              <p className="text-brand-gray-muted mb-0">Gestiona tus entregas en curso y toma nuevos pedidos</p>
             </div>
             <div className="d-flex gap-2">
-              <Button 
-                variant={showRatings ? "outline-warning" : "outline-warning"} 
-                onClick={() => {
-                  setShowRatings(!showRatings);
-                  setShowHistory(false);
-                }}
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                className="rounded-3"
+                onClick={() => { setShowRatings(!showRatings); setShowHistory(false); }}
               >
                 <Star size={18} className="me-2" />
                 {showRatings ? 'Ocultar Calificaciones' : 'Mis Calificaciones'}
               </Button>
-              <Button 
-                variant={showHistory ? "outline-secondary" : "outline-primary"} 
-                onClick={() => {
-                  setShowHistory(!showHistory);
-                  setShowRatings(false);
-                }}
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                className="rounded-3"
+                onClick={() => { setShowHistory(!showHistory); setShowRatings(false); }}
               >
                 <History size={18} className="me-2" />
                 {showHistory ? 'Ocultar Historial' : 'Ver Historial'}
@@ -171,18 +169,20 @@ export default function DeliveryDashboard() {
       <Row className="g-4">
         {/* Pedidos Disponibles */}
         <Col lg={6}>
-          <Card className="shadow-sm">
-            <Card.Header className="bg-info text-white">
-              <h5 className="mb-0 d-flex align-items-center">
-                <Package className="me-2" />
+          <Card className="panel-card">
+            <Card.Header className="bg-white border-bottom">
+              <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                <Package className="me-2" style={{ color: '#00C853' }} />
                 Pedidos Disponibles ({availableOrders.length})
               </h5>
             </Card.Header>
             <Card.Body>
               {availableOrders.length === 0 ? (
-                <div className="text-center py-4">
-                  <Package size={48} className="text-muted mb-3" />
-                  <p className="text-muted">No hay pedidos disponibles</p>
+                <div className="panel-empty-state">
+                  <div className="display-icon">
+                    <Package size={40} />
+                  </div>
+                  <p className="mb-0">No hay pedidos disponibles</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -212,13 +212,12 @@ export default function DeliveryDashboard() {
                             )}
                           </div>
                           <div className="text-end">
-                            <h5 className="mb-1 text-success">${order.total.toLocaleString()}</h5>
+                            <h5 className="mb-1 fw-bold" style={{ color: '#00C853' }}>${order.total.toLocaleString('es-CL')}</h5>
                           </div>
                         </div>
                         <Button
-                          variant="success"
                           size="sm"
-                          className="w-100"
+                          className="w-100 rounded-3 panel-btn-primary"
                           onClick={() => handleTakeOrder(order.id)}
                         >
                           <Truck className="me-1" />
@@ -235,19 +234,21 @@ export default function DeliveryDashboard() {
 
         {/* Mis Entregas en Curso */}
         <Col lg={6}>
-          <Card className="shadow-sm">
-            <Card.Header className="bg-warning text-dark">
-              <h5 className="mb-0 d-flex align-items-center">
-                <Truck className="me-2" />
+          <Card className="panel-card">
+            <Card.Header className="bg-white border-bottom">
+              <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                <Truck className="me-2" style={{ color: '#00C853' }} />
                 Mis Entregas en Curso ({activeDeliveries.length})
               </h5>
             </Card.Header>
             <Card.Body>
               {activeDeliveries.length === 0 ? (
-                <div className="text-center py-4">
-                  <Truck size={48} className="text-muted mb-3" />
-                  <p className="text-muted">No tienes entregas en curso</p>
-                  <p className="text-muted small">Toma un pedido disponible para comenzar</p>
+                <div className="panel-empty-state">
+                  <div className="display-icon">
+                    <Truck size={40} />
+                  </div>
+                  <p className="mb-1">No tienes entregas en curso</p>
+                  <p className="small mb-0">Toma un pedido disponible para comenzar</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -278,7 +279,7 @@ export default function DeliveryDashboard() {
                             </div>
                           </div>
                           <div className="text-end">
-                            <h5 className="mb-1 text-success">${order.total.toLocaleString()}</h5>
+                            <h5 className="mb-1 fw-bold" style={{ color: '#00C853' }}>${order.total.toLocaleString('es-CL')}</h5>
                           </div>
                         </div>
                         
@@ -298,9 +299,9 @@ export default function DeliveryDashboard() {
                         <div className="d-flex gap-2">
                           {order.delivery_address && (
                             <Button
-                              variant="outline-primary"
+                              variant="outline-secondary"
                               size="sm"
-                              className="flex-fill"
+                              className="flex-fill rounded-3"
                               onClick={() => {
                                 const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(order.delivery_address!)}`;
                                 window.open(url, '_blank');
@@ -310,12 +311,7 @@ export default function DeliveryDashboard() {
                               Abrir en Navegación
                             </Button>
                           )}
-                          <Button
-                            variant="success"
-                            size="sm"
-                            className="flex-fill"
-                            onClick={() => handleArrived(order)}
-                          >
+                          <Button size="sm" className="flex-fill rounded-3 panel-btn-primary" onClick={() => handleArrived(order)}>
                             He Llegado
                           </Button>
                         </div>
@@ -342,18 +338,20 @@ export default function DeliveryDashboard() {
       {showHistory && (
         <Row className="mt-4">
           <Col>
-            <Card className="shadow-sm">
-              <Card.Header className="bg-success text-white">
-                <h5 className="mb-0 d-flex align-items-center">
-                  <CheckCircle className="me-2" />
+            <Card className="panel-card">
+              <Card.Header className="bg-white border-bottom">
+                <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                  <CheckCircle className="me-2" style={{ color: '#00C853' }} />
                   Historial de Entregas ({deliveryHistory.length})
                 </h5>
               </Card.Header>
               <Card.Body>
                 {deliveryHistory.length === 0 ? (
-                  <div className="text-center py-4">
-                    <History size={48} className="text-muted mb-3" />
-                    <p className="text-muted">No tienes entregas completadas aún</p>
+                  <div className="panel-empty-state">
+                    <div className="display-icon">
+                      <History size={40} />
+                    </div>
+                    <p className="mb-0">No tienes entregas completadas aún</p>
                   </div>
                 ) : (
                   <div className="table-responsive">
@@ -383,7 +381,7 @@ export default function DeliveryDashboard() {
                               <small>{order.delivery_address || 'N/A'}</small>
                             </td>
                             <td>
-                              <strong className="text-success">${order.total.toLocaleString()}</strong>
+                              <strong style={{ color: '#00C853' }}>${order.total.toLocaleString('es-CL')}</strong>
                             </td>
                             <td>
                               <small>{formatDate(order.updated_at!)}</small>

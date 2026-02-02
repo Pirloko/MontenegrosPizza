@@ -56,27 +56,25 @@ export default function DeliveryCodeModal({ show, onHide, order, onCodeVerified 
   if (!order) return null;
 
   return (
-    <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
-        <Modal.Title className="d-flex align-items-center gap-2">
-          <Key size={20} />
+    <Modal show={show} onHide={handleClose} centered contentClassName="rounded-3 border-0 shadow-lg">
+      <Modal.Header closeButton className="border-bottom" style={{ background: 'linear-gradient(135deg, #1a1a1a 0%, #00A843 100%)', color: '#fff' }}>
+        <Modal.Title className="d-flex align-items-center gap-2 fw-bold" style={{ fontFamily: 'var(--font-display)' }}>
+          <Key size={20} style={{ color: '#00C853' }} />
           Verificar Código de Entrega
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <p>Pedido: <strong>#{order.order_number}</strong></p>
+      <Modal.Body className="p-4">
+        <p className="mb-2">Pedido: <strong>#{order.order_number}</strong></p>
         <p className="text-muted small mb-3">
-          Por favor pide al cliente el código de 3 dígitos que se generó cuando el pedido estaba listo.
+          Pide al cliente el código de 3 dígitos generado cuando el pedido estaba listo.
         </p>
-        
         {error && (
-          <Alert variant="danger" dismissible onClose={() => setError('')}>
+          <Alert variant="danger" dismissible onClose={() => setError('')} className="rounded-3 border-0">
             {error}
           </Alert>
         )}
-        
         <Form.Group>
-          <Form.Label>Código de Entrega</Form.Label>
+          <Form.Label className="fw-bold">Código de Entrega</Form.Label>
           <Form.Control
             type="number"
             min="100"
@@ -85,22 +83,15 @@ export default function DeliveryCodeModal({ show, onHide, order, onCodeVerified 
             onChange={(e) => setCode(e.target.value)}
             placeholder="123"
             autoFocus
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                handleVerify();
-              }
-            }}
+            className="rounded-3"
+            onKeyPress={(e) => { if (e.key === 'Enter') handleVerify(); }}
           />
-          <Form.Text className="text-muted">
-            Ingresa el código de 3 dígitos que te proporcionó el cliente.
-          </Form.Text>
+          <Form.Text className="text-muted">Código de 3 dígitos que te dio el cliente.</Form.Text>
         </Form.Group>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose} disabled={verifying}>
-          Cancelar
-        </Button>
-        <Button variant="success" onClick={handleVerify} disabled={verifying || !code}>
+      <Modal.Footer className="border-top bg-light">
+        <Button variant="outline-secondary" className="rounded-3" onClick={handleClose} disabled={verifying}>Cancelar</Button>
+        <Button className="rounded-3 panel-btn-primary border-0" onClick={handleVerify} disabled={verifying || !code}>
           {verifying ? 'Verificando...' : 'Verificar y Entregar'}
         </Button>
       </Modal.Footer>

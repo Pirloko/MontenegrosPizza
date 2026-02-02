@@ -71,8 +71,8 @@ export default function DeliveryRatings() {
     return (
       <Container className="py-5">
         <div className="text-center">
-          <Spinner animation="border" variant="primary" />
-          <p className="mt-3">Cargando calificaciones...</p>
+          <Spinner animation="border" style={{ color: 'var(--brand-green)' }} />
+          <p className="mt-3 text-brand-gray-muted">Cargando calificaciones...</p>
         </div>
       </Container>
     );
@@ -82,64 +82,57 @@ export default function DeliveryRatings() {
     <Container className="py-4">
       <Row className="mb-4">
         <Col>
-          <h2 className="d-flex align-items-center gap-2 mb-1">
-            <Star size={28} />
+          <h2 className="d-flex align-items-center gap-2 mb-1 fw-bold" style={{ color: 'var(--brand-black)', fontFamily: 'var(--font-display)' }}>
+            <Star size={28} style={{ color: 'var(--brand-green)' }} />
             Mis Calificaciones de Delivery
           </h2>
-          <p className="text-muted mb-0">Revisa las calificaciones de tus entregas</p>
+          <p className="text-brand-gray-muted mb-0">Revisa las calificaciones de tus entregas</p>
         </Col>
       </Row>
 
       {error && (
-        <Alert variant="danger" className="mb-4" dismissible onClose={() => setError('')}>
+        <Alert variant="danger" className="mb-4 rounded-3 border-0" dismissible onClose={() => setError('')}>
           {error}
         </Alert>
       )}
 
-      {/* Estadísticas */}
       {ratings.length > 0 && (
-        <Row className="mb-4">
+        <Row className="mb-4 g-3">
           <Col md={4}>
-            <Card className="shadow-sm border-primary">
+            <Card className="panel-card border-0">
               <Card.Body>
                 <div className="d-flex align-items-center justify-content-between">
                   <div>
-                    <p className="text-muted mb-1 small">Calificación Promedio</p>
-                    <h3 className="mb-0 text-primary">
-                      {stats.average.toFixed(1)}/5
-                    </h3>
+                    <p className="text-brand-gray-muted mb-1 small">Calificación Promedio</p>
+                    <h3 className="mb-0 fw-bold" style={{ color: 'var(--brand-green)' }}>{stats.average.toFixed(1)}/5</h3>
                   </div>
-                  <Star size={32} className="text-primary" />
+                  <Star size={32} style={{ color: 'var(--brand-green)' }} />
                 </div>
               </Card.Body>
             </Card>
           </Col>
           <Col md={4}>
-            <Card className="shadow-sm border-success">
+            <Card className="panel-card border-0">
               <Card.Body>
                 <div className="d-flex align-items-center justify-content-between">
                   <div>
-                    <p className="text-muted mb-1 small">Total de Calificaciones</p>
-                    <h3 className="mb-0 text-success">
-                      {stats.total}
-                    </h3>
+                    <p className="text-brand-gray-muted mb-1 small">Total de Calificaciones</p>
+                    <h3 className="mb-0 fw-bold" style={{ color: '#1a1a1a' }}>{stats.total}</h3>
                   </div>
-                  <MessageSquare size={32} className="text-success" />
+                  <MessageSquare size={32} style={{ color: '#424242' }} />
                 </div>
               </Card.Body>
             </Card>
           </Col>
           <Col md={4}>
-            <Card className="shadow-sm border-warning">
+            <Card className="panel-card border-0">
               <Card.Body>
                 <div className="d-flex align-items-center justify-content-between">
                   <div>
-                    <p className="text-muted mb-1 small">Calificaciones 5 Estrellas</p>
-                    <h3 className="mb-0 text-warning">
-                      {stats.distribution[5]}
-                    </h3>
+                    <p className="text-brand-gray-muted mb-1 small">Calificaciones 5 Estrellas</p>
+                    <h3 className="mb-0 fw-bold" style={{ color: '#FFD54F' }}>{stats.distribution[5]}</h3>
                   </div>
-                  <Star size={32} className="text-warning" />
+                  <Star size={32} style={{ color: '#FFD54F' }} />
                 </div>
               </Card.Body>
             </Card>
@@ -147,17 +140,19 @@ export default function DeliveryRatings() {
         </Row>
       )}
 
-      {/* Tabla de Calificaciones */}
-      <Card className="shadow-sm">
-        <Card.Header className="bg-success text-white">
-          <h5 className="mb-0">Historial de Calificaciones</h5>
+      <Card className="panel-card">
+        <Card.Header className="border-bottom py-3" style={{ background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)', borderRadius: '1rem 1rem 0 0' }}>
+          <h5 className="mb-0 fw-bold d-flex align-items-center" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+            <Star className="me-2" style={{ color: 'var(--brand-green)' }} />
+            Historial de Calificaciones
+          </h5>
         </Card.Header>
         <Card.Body className="p-0">
           {ratings.length === 0 ? (
-            <div className="text-center py-5">
-              <Star size={48} className="text-muted mb-3" />
-              <p className="text-muted">No tienes calificaciones aún</p>
-              <p className="text-muted small">Las calificaciones aparecerán aquí cuando los clientes califiquen tus entregas</p>
+            <div className="panel-empty-state">
+              <div className="display-icon"><Star size={48} /></div>
+              <p className="mb-1">No tienes calificaciones aún</p>
+              <p className="text-muted small mb-0">Aparecerán cuando los clientes califiquen tus entregas</p>
             </div>
           ) : (
             <div className="table-responsive">

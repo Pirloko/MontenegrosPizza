@@ -49,39 +49,42 @@ export function SalesChart() {
       <Card.Header style={{ background: 'transparent', borderBottom: '1px solid #333', padding: '20px' }}>
         <div className="d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center gap-2">
-            <TrendingUp size={20} style={{ color: '#0B6E4F' }} />
+            <TrendingUp size={20} style={{ color: '#00C853' }} />
             <strong style={{ color: '#fff', fontWeight: 600 }}>Ventas por Período</strong>
           </div>
           <ButtonGroup size="sm">
             <Button
-              variant={period === 'day' ? 'primary' : 'outline-light'}
+              variant={period === 'day' ? 'success' : 'outline-light'}
               onClick={() => setPeriod('day')}
               style={{
                 borderRadius: period === 'day' ? '8px 0 0 8px' : '0',
                 borderColor: '#333',
-                color: period === 'day' ? '#fff' : '#b0b0b0'
+                backgroundColor: period === 'day' ? '#00C853' : undefined,
+                color: period === 'day' ? '#1a1a1a' : '#b0b0b0'
               }}
             >
               Hoy
             </Button>
             <Button
-              variant={period === 'week' ? 'primary' : 'outline-light'}
+              variant={period === 'week' ? 'success' : 'outline-light'}
               onClick={() => setPeriod('week')}
               style={{
                 borderRadius: '0',
                 borderColor: '#333',
-                color: period === 'week' ? '#fff' : '#b0b0b0'
+                backgroundColor: period === 'week' ? '#00C853' : undefined,
+                color: period === 'week' ? '#1a1a1a' : '#b0b0b0'
               }}
             >
               Semana
             </Button>
             <Button
-              variant={period === 'month' ? 'primary' : 'outline-light'}
+              variant={period === 'month' ? 'success' : 'outline-light'}
               onClick={() => setPeriod('month')}
               style={{
                 borderRadius: period === 'month' ? '0 8px 8px 0' : '0',
                 borderColor: '#333',
-                color: period === 'month' ? '#fff' : '#b0b0b0'
+                backgroundColor: period === 'month' ? '#00C853' : undefined,
+                color: period === 'month' ? '#1a1a1a' : '#b0b0b0'
               }}
             >
               Mes
@@ -110,7 +113,7 @@ export function SalesChart() {
               <div className="col-md-4">
                 <div className="text-center p-3 rounded" style={{ backgroundColor: '#252525', border: '1px solid #333' }}>
                   <small className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Total Ventas</small>
-                  <h4 className="mb-0" style={{ color: '#0B6E4F', fontWeight: 700 }}>
+                  <h4 className="mb-0" style={{ color: '#00C853', fontWeight: 700 }}>
                     ${totalSales.toLocaleString('es-CL')}
                   </h4>
                 </div>

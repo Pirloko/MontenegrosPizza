@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Form, Button, Alert, Table, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Alert, Table, Badge, Spinner } from 'react-bootstrap';
 import { DollarSign, Fuel, Gauge, TrendingUp, Calculator, Save } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { deliveryService } from '../../services/deliveryService';
@@ -168,7 +168,8 @@ export default function DeliveryEarnings() {
     return (
       <Container className="py-5">
         <div className="text-center">
-          <p>Cargando datos...</p>
+          <Spinner animation="border" style={{ color: '#00C853' }} />
+          <p className="mt-3 text-brand-gray-muted">Cargando datos...</p>
         </div>
       </Container>
     );
@@ -178,11 +179,11 @@ export default function DeliveryEarnings() {
     <Container className="py-4">
       <Row className="mb-4">
         <Col>
-          <h2 className="d-flex align-items-center gap-2 mb-1">
-            <DollarSign size={28} />
-            Dashboard de Ganancias
+          <h2 className="d-flex align-items-center gap-2 mb-1 fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+            <DollarSign size={28} style={{ color: '#00C853' }} />
+            Ganancias
           </h2>
-          <p className="text-muted mb-0">Gestiona tus ganancias y costos de entrega</p>
+          <p className="text-brand-gray-muted mb-0">Gestiona tus ganancias y costos de entrega</p>
         </Col>
       </Row>
 
@@ -201,10 +202,10 @@ export default function DeliveryEarnings() {
       <Row className="g-4 mb-4">
         {/* Configuración del Vehículo */}
         <Col lg={4}>
-          <Card className="shadow-sm">
-            <Card.Header className="bg-primary text-white">
-              <h5 className="mb-0 d-flex align-items-center">
-                <Gauge size={20} className="me-2" />
+          <Card className="panel-card">
+            <Card.Header className="bg-white border-bottom">
+              <h5 className="mb-0 d-flex align-items-center fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>
+                <Gauge size={20} className="me-2" style={{ color: '#00C853' }} />
                 Configuración del Vehículo
               </h5>
             </Card.Header>
@@ -253,8 +254,7 @@ export default function DeliveryEarnings() {
                 </Form.Group>
 
                 <Button
-                  variant="primary"
-                  className="w-100"
+                  className="w-100 rounded-3 panel-btn-primary"
                   onClick={handleSaveConfig}
                   disabled={saving}
                 >
@@ -270,64 +270,56 @@ export default function DeliveryEarnings() {
         <Col lg={8}>
           <Row className="g-3">
             <Col md={6}>
-              <Card className="shadow-sm border-success">
+              <Card className="panel-card border-0">
                 <Card.Body>
                   <div className="d-flex align-items-center justify-content-between">
                     <div>
-                      <p className="text-muted mb-1 small">Ganancias Totales</p>
-                      <h3 className="mb-0 text-success">
-                        ${stats.totalEarnings.toLocaleString()}
-                      </h3>
+                      <p className="text-brand-gray-muted mb-1 small">Ganancias Totales</p>
+                      <h3 className="mb-0 fw-bold" style={{ color: '#00C853' }}>${stats.totalEarnings.toLocaleString('es-CL')}</h3>
                     </div>
-                    <DollarSign size={32} className="text-success" />
+                    <DollarSign size={32} style={{ color: '#00C853' }} />
                   </div>
                 </Card.Body>
               </Card>
             </Col>
 
             <Col md={6}>
-              <Card className="shadow-sm border-warning">
+              <Card className="panel-card border-0">
                 <Card.Body>
                   <div className="d-flex align-items-center justify-content-between">
                     <div>
-                      <p className="text-muted mb-1 small">Ganancia Neta</p>
-                      <h3 className="mb-0 text-warning">
-                        ${stats.netEarnings.toLocaleString()}
-                      </h3>
+                      <p className="text-brand-gray-muted mb-1 small">Ganancia Neta</p>
+                      <h3 className="mb-0 fw-bold" style={{ color: '#00C853' }}>${stats.netEarnings.toLocaleString('es-CL')}</h3>
                     </div>
-                    <TrendingUp size={32} className="text-warning" />
+                    <TrendingUp size={32} style={{ color: '#00C853' }} />
                   </div>
                 </Card.Body>
               </Card>
             </Col>
 
             <Col md={6}>
-              <Card className="shadow-sm border-danger">
+              <Card className="panel-card border-0">
                 <Card.Body>
                   <div className="d-flex align-items-center justify-content-between">
                     <div>
-                      <p className="text-muted mb-1 small">Costo de Combustible</p>
-                      <h3 className="mb-0 text-danger">
-                        ${stats.totalFuelCost.toLocaleString()}
-                      </h3>
+                      <p className="text-brand-gray-muted mb-1 small">Costo de Combustible</p>
+                      <h3 className="mb-0 fw-bold" style={{ color: '#E53935' }}>${stats.totalFuelCost.toLocaleString('es-CL')}</h3>
                     </div>
-                    <Fuel size={32} className="text-danger" />
+                    <Fuel size={32} style={{ color: '#E53935' }} />
                   </div>
                 </Card.Body>
               </Card>
             </Col>
 
             <Col md={6}>
-              <Card className="shadow-sm border-info">
+              <Card className="panel-card border-0">
                 <Card.Body>
                   <div className="d-flex align-items-center justify-content-between">
                     <div>
-                      <p className="text-muted mb-1 small">Promedio por Entrega</p>
-                      <h3 className="mb-0 text-info">
-                        ${stats.avgEarningsPerDelivery.toLocaleString()}
-                      </h3>
+                      <p className="text-brand-gray-muted mb-1 small">Promedio por Entrega</p>
+                      <h3 className="mb-0 fw-bold" style={{ color: '#1a1a1a' }}>${stats.avgEarningsPerDelivery.toLocaleString('es-CL')}</h3>
                     </div>
-                    <Calculator size={32} className="text-info" />
+                    <Calculator size={32} style={{ color: '#424242' }} />
                   </div>
                 </Card.Body>
               </Card>
@@ -336,9 +328,9 @@ export default function DeliveryEarnings() {
 
           {/* Detalles de Cálculo */}
           {vehicleConfig.fuel_price_per_liter > 0 && vehicleConfig.km_per_liter > 0 && (
-            <Card className="shadow-sm mt-3">
-              <Card.Header>
-                <h6 className="mb-0">Detalles del Cálculo</h6>
+            <Card className="panel-card mt-3">
+              <Card.Header className="bg-white border-bottom">
+                <h6 className="mb-0 fw-bold" style={{ color: '#1a1a1a' }}>Detalles del Cálculo</h6>
               </Card.Header>
               <Card.Body>
                 <Row>
@@ -368,14 +360,14 @@ export default function DeliveryEarnings() {
       {/* Historial de Entregas */}
       <Row>
         <Col>
-          <Card className="shadow-sm">
-            <Card.Header className="bg-light">
-              <h5 className="mb-0">Historial de Entregas</h5>
+          <Card className="panel-card">
+            <Card.Header className="bg-white border-bottom">
+              <h5 className="mb-0 fw-bold" style={{ color: '#1a1a1a', fontFamily: 'var(--font-display)' }}>Historial de Entregas</h5>
             </Card.Header>
             <Card.Body>
               {deliveryHistory.length === 0 ? (
-                <div className="text-center py-4">
-                  <p className="text-muted">No tienes entregas completadas aún</p>
+                <div className="panel-empty-state">
+                  <p className="mb-0">No tienes entregas completadas aún</p>
                 </div>
               ) : (
                 <div className="table-responsive">
