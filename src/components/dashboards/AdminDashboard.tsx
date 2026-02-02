@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Card, Nav, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Nav, Button, Offcanvas } from 'react-bootstrap';
 import { useAuth } from '../../context/AuthContext';
 import { 
   LayoutDashboard, 
@@ -12,7 +12,8 @@ import {
   ShoppingBag,
   Truck,
   Star,
-  BarChart3
+  BarChart3,
+  Menu
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProductManagement from '../admin/ProductManagement';
@@ -31,8 +32,45 @@ type TabKey = 'overview' | 'products' | 'categories' | 'ingredients' | 'promotio
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<TabKey>('overview');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+
+  const closeSidebar = () => setSidebarOpen(false);
+
+  const navLinks: { key: TabKey; icon: React.ElementType; label: string }[] = [
+    { key: 'overview', icon: TrendingUp, label: 'KPIs y Reportes' },
+    { key: 'orders', icon: ShoppingBag, label: 'Pedidos' },
+    { key: 'products', icon: Package, label: 'Productos' },
+    { key: 'categories', icon: LayoutDashboard, label: 'Categorías' },
+    { key: 'ingredients', icon: Tags, label: 'Ingredientes Extra' },
+    { key: 'promotions', icon: Tags, label: 'Promociones' },
+    { key: 'delivery', icon: Truck, label: 'Config. Delivery' },
+    { key: 'ratings', icon: Star, label: 'Calificaciones' },
+    { key: 'users', icon: Users, label: 'Usuarios' },
+    { key: 'employeeStats', icon: BarChart3, label: 'Estad. Empleados' },
+    { key: 'deliveryStats', icon: Truck, label: 'Estad. Repartidores' },
+    { key: 'settings', icon: Settings, label: 'Configuración' },
+  ];
+
+  const renderNavLinks = (onItemClick?: () => void) => (
+    <>
+      {navLinks.map(({ key, icon: Icon, label }) => (
+        <Nav.Link
+          key={key}
+          active={activeTab === key}
+          onClick={() => {
+            setActiveTab(key);
+            onItemClick?.();
+          }}
+          className="d-flex align-items-center gap-2"
+        >
+          <Icon size={20} />
+          <span>{label}</span>
+        </Nav.Link>
+      ))}
+    </>
+  );
 
   async function handleLogout() {
     try {
@@ -47,14 +85,25 @@ export default function AdminDashboard() {
     <div className="min-vh-100 admin-dark-mode">
       {/* Top Navigation Bar */}
       <nav className="navbar navbar-dark navbar-expand-lg shadow-sm" style={{ padding: '1rem 0' }}>
-        <Container fluid>
+        <Container fluid className="d-flex align-items-center">
+          {/* Botón menú hamburguesa - solo en mobile/tablet */}
+          <Button
+            variant="outline-light"
+            size="sm"
+            className="d-lg-none me-2 rounded-3 p-2"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Abrir menú"
+            style={{ borderColor: 'rgba(255,255,255,0.4)' }}
+          >
+            <Menu size={24} />
+          </Button>
           <span className="navbar-brand fw-bold d-flex align-items-center" style={{ fontSize: '1.2rem' }}>
             <LayoutDashboard size={26} className="me-2" style={{ color: '#00C853' }} />
             <span style={{ background: 'linear-gradient(135deg, #00C853 0%, #fff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Panel Admin
             </span>
           </span>
-          <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-3 ms-auto">
             <span className="text-white d-flex align-items-center gap-2">
               <div style={{ 
                 width: '40px', 
@@ -104,109 +153,35 @@ export default function AdminDashboard() {
         </Container>
       </nav>
 
+      {/* Offcanvas menú lateral - solo visible en mobile/tablet */}
+      <Offcanvas
+        show={sidebarOpen}
+        onHide={closeSidebar}
+        placement="start"
+        className="admin-dark-mode"
+        style={{ width: '280px', maxWidth: '85vw' }}
+      >
+        <Offcanvas.Header closeButton className="border-bottom" style={{ borderColor: 'var(--admin-card-border)' }}>
+          <Offcanvas.Title className="d-flex align-items-center fw-bold">
+            <LayoutDashboard size={24} className="me-2" style={{ color: '#00C853' }} />
+            Menú Admin
+          </Offcanvas.Title>
+        </Offcanvas.Header>
+        <Offcanvas.Body className="p-0">
+          <Nav className="flex-column p-2 admin-sidebar admin-sidebar-v2" style={{ border: 'none', background: 'transparent' }}>
+            {renderNavLinks(closeSidebar)}
+          </Nav>
+        </Offcanvas.Body>
+      </Offcanvas>
+
       <Container fluid className="mt-4" style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
         <Row>
-          {/* Sidebar compacto y elegante */}
-          <Col lg={2} className="mb-4">
+          {/* Sidebar - solo visible en desktop (lg+) */}
+          <Col lg={2} className="mb-4 d-none d-lg-block">
             <Card className="admin-sidebar admin-sidebar-v2" style={{ border: 'none' }}>
               <Card.Body className="p-2">
                 <Nav className="flex-column">
-                  <Nav.Link 
-                    active={activeTab === 'overview'}
-                    onClick={() => setActiveTab('overview')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <TrendingUp size={20} />
-                    <span>KPIs y Reportes</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'orders'}
-                    onClick={() => setActiveTab('orders')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <ShoppingBag size={20} />
-                    <span>Pedidos</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'products'}
-                    onClick={() => setActiveTab('products')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <Package size={20} />
-                    <span>Productos</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'categories'}
-                    onClick={() => setActiveTab('categories')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <LayoutDashboard size={20} />
-                    <span>Categorías</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'ingredients'}
-                    onClick={() => setActiveTab('ingredients')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <Tags size={20} />
-                    <span>Ingredientes Extra</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'promotions'}
-                    onClick={() => setActiveTab('promotions')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <Tags size={20} />
-                    <span>Promociones</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'delivery'}
-                    onClick={() => setActiveTab('delivery')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <Truck size={20} />
-                    <span>Config. Delivery</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'ratings'}
-                    onClick={() => setActiveTab('ratings')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <Star size={20} />
-                    <span>Calificaciones</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'users'}
-                    onClick={() => setActiveTab('users')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <Users size={20} />
-                    <span>Usuarios</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'employeeStats'}
-                    onClick={() => setActiveTab('employeeStats')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <BarChart3 size={20} />
-                    <span>Estad. Empleados</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'deliveryStats'}
-                    onClick={() => setActiveTab('deliveryStats')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <Truck size={20} />
-                    <span>Estad. Repartidores</span>
-                  </Nav.Link>
-                  <Nav.Link 
-                    active={activeTab === 'settings'}
-                    onClick={() => setActiveTab('settings')}
-                    className="d-flex align-items-center gap-2"
-                  >
-                    <Settings size={20} />
-                    <span>Configuración</span>
-                  </Nav.Link>
+                  {renderNavLinks()}
                 </Nav>
               </Card.Body>
             </Card>
