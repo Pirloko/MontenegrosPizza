@@ -83,8 +83,11 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-vh-100 admin-dark-mode">
-      {/* Top Navigation Bar */}
-      <nav className="navbar navbar-dark navbar-expand-lg shadow-sm" style={{ padding: '1rem 0' }}>
+      {/* Top Navigation Bar - sticky en móvil para que el menú hamburguesa siempre esté visible */}
+      <nav 
+        className="navbar navbar-dark navbar-expand-lg shadow-sm admin-nav-sticky" 
+        style={{ padding: '0.75rem 0' }}
+      >
         <Container fluid className="d-flex align-items-center">
           {/* Botón menú hamburguesa - solo en mobile/tablet */}
           <Button
@@ -97,28 +100,29 @@ export default function AdminDashboard() {
           >
             <Menu size={24} />
           </Button>
-          <span className="navbar-brand fw-bold d-flex align-items-center" style={{ fontSize: '1.2rem' }}>
+          <span className="navbar-brand fw-bold d-flex align-items-center admin-nav-brand" style={{ fontSize: 'clamp(1rem, 4vw, 1.2rem)' }}>
             <LayoutDashboard size={26} className="me-2" style={{ color: '#00C853' }} />
             <span style={{ background: 'linear-gradient(135deg, #00C853 0%, #fff 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               Panel Admin
             </span>
           </span>
-          <div className="d-flex align-items-center gap-3 ms-auto">
+          <div className="d-flex align-items-center gap-2 gap-sm-3 ms-auto">
             <span className="text-white d-flex align-items-center gap-2">
               <div style={{ 
-                width: '40px', 
-                height: '40px', 
+                width: '36px', 
+                height: '36px', 
+                minWidth: '36px',
                 borderRadius: '50%', 
                 background: 'linear-gradient(135deg, #0B6E4F 0%, #dc3545 100%)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 fontWeight: 'bold',
-                fontSize: '16px'
+                fontSize: '14px'
               }}>
                 {user?.full_name?.charAt(0).toUpperCase()}
               </div>
-              <div>
+              <div className="d-none d-sm-block">
                 <strong style={{ display: 'block', fontSize: '0.9rem' }}>{user?.full_name}</strong>
                 <span className="badge" style={{ 
                   background: 'rgba(11, 110, 79, 0.2)', 
@@ -131,6 +135,7 @@ export default function AdminDashboard() {
             <Button 
               variant="outline-light" 
               size="sm" 
+              className="rounded-3"
               onClick={handleLogout}
               style={{
                 borderColor: '#333',

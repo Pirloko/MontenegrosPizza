@@ -140,9 +140,9 @@ export default function OrdersManagement() {
     <Container fluid>
       <Row className="mb-4">
         <Col>
-          <div className="d-flex justify-content-between align-items-center">
-            <h3>Gestión de Pedidos</h3>
-            <Button variant="outline-primary" onClick={loadOrders}>
+          <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
+            <h3 className="mb-0" style={{ fontSize: 'clamp(1.25rem, 4vw, 1.5rem)' }}>Gestión de Pedidos</h3>
+            <Button variant="outline-primary" size="sm" className="rounded-3 flex-shrink-0" onClick={loadOrders}>
               <RefreshCw size={18} className="me-1" />
               Actualizar
             </Button>
@@ -156,43 +156,110 @@ export default function OrdersManagement() {
         </Alert>
       )}
 
-      {/* Filtros de estado: diseño compacto */}
+      {/* Filtros de estado: scroll horizontal en móvil */}
       <Row className="mb-4">
         <Col>
-          <Card style={{ border: 'none', borderRadius: '1rem' }}>
-            <Card.Body className="py-3">
-              <div className="d-flex flex-wrap gap-2 align-items-center">
-                <Button
-                  variant={selectedStatus === 'all' ? 'dark' : 'outline-dark'}
-                  size="sm"
-                  className="rounded-pill"
-                  onClick={() => setSelectedStatus('all')}
-                >
-                  Todos ({orders.length})
-                </Button>
-                {Object.entries(ORDER_STATUSES).map(([status, config]) => {
-                  const count = orders.filter(o => o.status === status).length;
-                  return (
-                    <Button
-                      key={status}
-                      variant={selectedStatus === status ? 'success' : 'outline-secondary'}
-                      size="sm"
-                      className="rounded-pill"
-                      style={selectedStatus === status ? { backgroundColor: '#00C853', borderColor: '#00C853' } : {}}
-                      onClick={() => setSelectedStatus(status)}
-                    >
-                      {config.label} ({count})
-                    </Button>
-                  );
-                })}
-              </div>
-            </Card.Body>
-          </Card>
+          <div className="orders-filter-scroll">
+            <div className="d-flex flex-nowrap gap-2 pb-2 overflow-x-auto">
+              <Button
+                variant={selectedStatus === 'all' ? 'dark' : 'outline-dark'}
+                size="sm"
+                className="rounded-pill flex-shrink-0"
+                onClick={() => setSelectedStatus('all')}
+              >
+                Todos ({orders.length})
+              </Button>
+              {Object.entries(ORDER_STATUSES).map(([status, config]) => {
+                const count = orders.filter(o => o.status === status).length;
+                return (
+                  <Button
+                    key={status}
+                    variant={selectedStatus === status ? 'success' : 'outline-secondary'}
+                    size="sm"
+                    className="rounded-pill flex-shrink-0"
+                    style={selectedStatus === status ? { backgroundColor: '#00C853', borderColor: '#00C853' } : {}}
+                    onClick={() => setSelectedStatus(status)}
+                  >
+                    {config.label} ({count})
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
         </Col>
       </Row>
 
-      {/* Lista de pedidos: tabla con hover suave */}
-      <Row>
+      {/* Vista móvil: tarjetas de pedidos */}
+      <Row className="d-md-none mb-3">
+        <Col>
+          {getFilteredOrders().length === 0 ? (
+            <Card className="border-0 shadow-sm">
+              <Card.Body className="text-center py-5">
+                <Package size={48} className="text-muted mb-3" />
+                <p className="text-muted mb-0">No hay pedidos con el estado seleccionado</p>
+              </Card.Body>
+            </Card>
+          ) : (
+          getFilteredOrders().map((order) => (
+            <Card key={order.id} className="mb-3 order-card-mobile border-0 shadow-sm">
+              <Card.Body className="p-3">
+                <div className="d-flex justify-content-between align-items-start mb-2">
+                  <div>
+                    <strong className="d-block" style={{ fontSize: '1rem' }}>#{order.order_number}</strong>
+                    <small className="text-muted">{formatDate(order.created_at!)}</small>
+                  </div>
+                  {getStatusBadge(order.status)}
+                </div>
+                <div className="mb-2">
+                  <span className="d-flex align-items-center gap-1">
+                    <User size={14} className="text-muted" />
+                    <strong>{order.customer_name}</strong>
+                  </span>
+                  <a href={`tel:${order.customer_phone}`} className="d-flex align-items-center gap-1 text-decoration-none small">
+                    <Phone size={14} />
+                    {order.customer_phone}
+                  </a>
+                </div>
+                <div className="d-flex flex-wrap gap-2 align-items-center mb-2">
+                  <Badge bg={order.delivery_type === 'delivery' ? 'info' : 'secondary'} className="border-0">
+                    {order.delivery_type === 'delivery' ? 'Delivery' : 'Retiro'}
+                  </Badge>
+                  <strong style={{ color: 'var(--brand-green)' }}>${order.total.toLocaleString()}</strong>
+                </div>
+                <div className="d-flex flex-wrap gap-1">
+                  <Button variant="outline-primary" size="sm" className="rounded-3 flex-grow-1" onClick={() => setSelectedOrder(order)}>
+                    <Eye size={14} className="me-1" /> Ver
+                  </Button>
+                  {order.status === 'received' && (
+                    <Button variant="outline-info" size="sm" className="rounded-3 flex-grow-1" onClick={() => handleStartPreparing(order.id, order.order_number)}>
+                      Preparar
+                    </Button>
+                  )}
+                  {order.status === 'preparing' && (
+                    <Button variant="outline-success" size="sm" className="rounded-3 flex-grow-1" onClick={() => updateOrderStatus(order.id, 'ready')}>
+                      Listo
+                    </Button>
+                  )}
+                  {order.status === 'ready' && order.delivery_type === 'delivery' && (
+                    <Button variant="outline-secondary" size="sm" className="rounded-3 flex-grow-1" onClick={() => updateOrderStatus(order.id, 'on_the_way')}>
+                      Enviar
+                    </Button>
+                  )}
+                  {(order.status === 'ready' || order.status === 'on_the_way') && (
+                    <Button variant="outline-success" size="sm" className="rounded-3 flex-grow-1" onClick={() => updateOrderStatus(order.id, 'delivered')}>
+                      Entregado
+                    </Button>
+                  )}
+                </div>
+              </Card.Body>
+            </Card>
+          ))
+          )}
+        </Col>
+      </Row>
+
+      {/* Vista desktop: tabla */}
+      <Row className="d-none d-md-block">
         <Col>
           <Card style={{ border: 'none', borderRadius: '1rem' }}>
             <Card.Body className="p-0">

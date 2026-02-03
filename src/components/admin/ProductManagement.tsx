@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Alert, Spinner, Badge, InputGroup, Image } from 'react-bootstrap';
-import { Plus, Edit2, Trash2, Eye, EyeOff, Upload, X, Search } from 'lucide-react';
+import { Table, Button, Modal, Form, Alert, Spinner, Badge, InputGroup, Image, Row, Col, Card } from 'react-bootstrap';
+import { Plus, Edit2, Trash2, Eye, EyeOff, X, Search, Package } from 'lucide-react';
 import { productService } from '../../services/productService';
 import { categoryService } from '../../services/categoryService';
 import { ingredientService } from '../../services/ingredientService';
@@ -271,32 +271,102 @@ export default function ProductManagement() {
 
   return (
     <div>
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-        <h3 className="mb-0">Gestión de Productos</h3>
-        <div className="d-flex flex-wrap gap-2 align-items-center">
-          <InputGroup style={{ maxWidth: '280px' }} className="rounded-pill">
-            <InputGroup.Text className="bg-dark border-dark text-white rounded-start-pill">
+      <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-3 mb-4">
+        <h3 className="mb-0" style={{ fontSize: 'clamp(1.25rem, 4vw, 1.5rem)' }}>Gestión de Productos</h3>
+        <div className="d-flex flex-column flex-sm-row gap-2 align-items-stretch align-items-sm-center w-100 w-sm-auto">
+          <InputGroup className="rounded-3" style={{ maxWidth: '100%' }}>
+            <InputGroup.Text className="bg-dark border-dark text-white rounded-start-3">
               <Search size={18} />
             </InputGroup.Text>
             <Form.Control
               type="search"
-              placeholder="Buscar por nombre o descripción..."
+              placeholder="Buscar producto..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="rounded-end-pill border-dark"
+              className="rounded-end-3 border-dark"
               style={{ borderLeft: 'none' }}
             />
           </InputGroup>
-          <Button variant="success" onClick={() => handleOpenModal()} className="rounded-pill px-3" style={{ backgroundColor: '#00C853', borderColor: '#00C853' }}>
+          <Button variant="success" onClick={() => handleOpenModal()} className="rounded-3 px-3 flex-shrink-0" style={{ backgroundColor: '#00C853', borderColor: '#00C853' }}>
             <Plus size={18} className="me-2" />
             Nuevo Producto
           </Button>
         </div>
       </div>
 
-      {error && <Alert variant="danger" dismissible onClose={() => setError('')}>{error}</Alert>}
-      {success && <Alert variant="success" dismissible onClose={() => setSuccess('')}>{success}</Alert>}
+      {error && <Alert variant="danger" dismissible onClose={() => setError('')} className="rounded-3">{error}</Alert>}
+      {success && <Alert variant="success" dismissible onClose={() => setSuccess('')} className="rounded-3">{success}</Alert>}
 
+      {/* Vista móvil: tarjetas de productos */}
+      <Row className="d-md-none g-3">
+        {filteredProducts.length === 0 ? (
+          <Col>
+            <Card className="border-0 shadow-sm">
+              <Card.Body className="text-center py-5">
+                <Package size={48} className="text-muted mb-3" />
+                <p className="text-muted mb-0">
+                  {products.length === 0 ? 'No hay productos registrados' : 'No hay resultados para la búsqueda'}
+                </p>
+              </Card.Body>
+            </Card>
+          </Col>
+        ) : (
+          filteredProducts.map((product) => {
+            const isLowStock = product.stock_quantity <= product.low_stock_alert && product.stock_quantity !== 999;
+            return (
+              <Col key={product.id}>
+                <Card className="product-card-mobile border-0 shadow-sm h-100">
+                  <Card.Body className="p-3">
+                    <div className="d-flex gap-3">
+                      <div className="flex-shrink-0">
+                        {product.image_url ? (
+                          <Image src={product.image_url} rounded style={{ width: '72px', height: '72px', objectFit: 'cover' }} />
+                        ) : (
+                          <div className="rounded d-flex align-items-center justify-content-center bg-light" style={{ width: '72px', height: '72px' }}>
+                            <Package size={24} className="text-muted" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-grow-1 min-w-0">
+                        <div className="d-flex justify-content-between align-items-start gap-2 mb-1">
+                          <strong className="text-truncate" style={{ fontSize: '1rem' }}>{product.name}</strong>
+                          <strong style={{ color: '#00C853', whiteSpace: 'nowrap' }}>${product.price.toLocaleString('es-CL')}</strong>
+                        </div>
+                        {product.description && (
+                          <small className="text-muted d-block line-clamp-2 mb-2">{product.description}</small>
+                        )}
+                        <div className="d-flex flex-wrap gap-1 mb-2">
+                          <Badge bg="secondary" className="border-0">{getCategoryName(product.category_id)}</Badge>
+                          {product.is_vegetarian && <Badge bg="success" className="border-0">Vegetariano</Badge>}
+                          {!product.available && <Badge bg="danger" className="border-0">AGOTADO</Badge>}
+                          {product.stock_quantity !== 999 && isLowStock && <Badge bg="warning" className="border-0">Stock Bajo</Badge>}
+                        </div>
+                        <div className="d-flex flex-wrap gap-1">
+                          <Button size="sm" variant="outline-primary" className="rounded-3" onClick={() => handleOpenModal(product)} title="Editar">
+                            <Edit2 size={14} />
+                          </Button>
+                          <Button size="sm" variant={product.is_active ? 'outline-warning' : 'outline-success'} className="rounded-3" onClick={() => handleToggleActive(product.id, product.is_active)} title={product.is_active ? 'Desactivar' : 'Activar'}>
+                            {product.is_active ? <EyeOff size={14} /> : <Eye size={14} />}
+                          </Button>
+                          <Button size="sm" variant={product.available ? 'outline-danger' : 'outline-success'} className="rounded-3" onClick={() => handleToggleAvailable(product.id, product.available)} title={product.available ? 'Agotado' : 'Disponible'}>
+                            {product.available ? '📦' : '✅'}
+                          </Button>
+                          <Button size="sm" variant="outline-danger" className="rounded-3" onClick={() => handleDelete(product.id, product.name)} title="Eliminar">
+                            <Trash2 size={14} />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            );
+          })
+        )}
+      </Row>
+
+      {/* Vista desktop: tabla */}
+      <div className="d-none d-md-block">
       <Table bordered hover responsive className="admin-table-modern" style={{ borderRadius: '0.75rem', overflow: 'hidden' }}>
         <thead className="table-dark">
           <tr>
@@ -415,6 +485,7 @@ export default function ProductManagement() {
           )}
         </tbody>
       </Table>
+      </div>
 
       {/* Modal Create/Edit: formulario bien espaciado, preview imagen */}
       <Modal show={showModal} onHide={handleCloseModal} size="lg" centered contentClassName="border-0" style={{ borderRadius: '1rem' }}>

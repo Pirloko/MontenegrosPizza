@@ -212,6 +212,20 @@
   text-transform: uppercase;
 }
 
+/* Hero title: evita corte feo en móvil (MONTENEGR / O'S PIZZA) */
+.hero-title-line {
+  display: block;
+  white-space: nowrap;
+}
+@media (min-width: 768px) {
+  .hero-title-line {
+    display: inline;
+  }
+  .hero-title-line:first-child::after {
+    content: ' ';
+  }
+}
+
 /* ===================================
    VARIABLES CSS PARA MODO OSCURO
    =================================== */
@@ -652,6 +666,13 @@ img {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5) !important;
 }
 
+/* Navbar admin: sticky en móvil para que hamburger siempre visible al hacer scroll */
+.admin-nav-sticky {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1030 !important;
+}
+
 /* Sidebar Admin Dark Mode */
 .admin-dark-mode .admin-sidebar {
   background-color: var(--admin-bg-secondary) !important;
@@ -947,6 +968,34 @@ img {
 .order-badge-on_the_way { background: linear-gradient(135deg, #7986CB 0%, #5C6BC0 100%) !important; color: #fff !important; }
 .order-badge-delivered { background: linear-gradient(135deg, #00C853 0%, #00A843 100%) !important; color: #1a1a1a !important; }
 .order-badge-cancelled { background: linear-gradient(135deg, #E57373 0%, #E53935 100%) !important; color: #fff !important; }
+
+/* Gestión de pedidos - móvil */
+.orders-filter-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+.orders-filter-scroll .overflow-x-auto::-webkit-scrollbar {
+  height: 4px;
+}
+.orders-filter-scroll .overflow-x-auto::-webkit-scrollbar-thumb {
+  background: var(--admin-card-border);
+  border-radius: 4px;
+}
+.order-card-mobile {
+  border-radius: 1rem !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.order-card-mobile:active {
+  transform: scale(0.99);
+}
+
+/* Gestión de productos - móvil */
+.product-card-mobile {
+  border-radius: 1rem !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.product-card-mobile:active {
+  transform: scale(0.99);
+}
 
 /* Filtros de fecha compactos */
 .admin-date-filters .form-control {

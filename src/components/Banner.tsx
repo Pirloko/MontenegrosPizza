@@ -44,16 +44,17 @@ const Banner: React.FC = () => {
       >
         <div className="text-center text-white">
           <h1
-            className="fw-bold mb-3 animate-hero-in montenegros-logo-text"
+            className="fw-bold mb-3 animate-hero-in montenegros-logo-text hero-title-mobile"
             style={{
-              fontSize: 'clamp(3rem, 8vw, 5.5rem)',
+              fontSize: 'clamp(2.25rem, 8vw, 5.5rem)',
               textShadow: '2px 4px 12px rgba(0,0,0,0.5)',
-              lineHeight: '1.1',
+              lineHeight: '1.15',
               letterSpacing: '0.02em',
               animationDelay: '0.1s',
             }}
           >
-            Montenegro's Pizza
+            <span className="hero-title-line">Montenegro's</span>
+            <span className="hero-title-line">Pizza</span>
           </h1>
           <p
             className="mb-4 animate-hero-in"
